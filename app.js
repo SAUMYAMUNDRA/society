@@ -45,7 +45,9 @@ app.get("/register", (req, res) => {
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "landing_page.html"));
 });
-
+app.get("/society", (req, res) => {
+  res.sendFile(path.join(__dirname, "pages", "society.html"));
+});
 app.get("/login", (req, res) => {
   if (req.session.societyEmail) {
     return res.redirect("/dashboard");

@@ -3,49 +3,110 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Responsive CSS Grid</title>
+  <title>Professional Responsive Grid</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom scrollbar for a cleaner look */
+    body::-webkit-scrollbar {
+      width: 8px;
+    }
+    body::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: #4a5568; /* Darker gray for professional feel */
+      border-radius: 4px;
+    }
+    body::-webkit-scrollbar-thumb:hover {
+      background: #2d3748; /* Even darker gray on hover */
+    }
+  </style>
 </head>
-<body class="bg-[#f6f9fe] flex items-center justify-center">
+<body class="bg-gray-100 min-h-screen p-4 flex items-center justify-center font-sans">
 
-  <div class="grid gap-2 w-full min-h-screen   p-1 rounded shadow-lg
-              grid-cols-1 md:grid-cols-4
-              ">
-    <!-- Navbar -->
-<div class="bg-white md:row-span-1 sm:row-span-1 md:col-span-4 col-span-2 border-2 text-center py-2 font-bold shadow-xl relative">
-    <div class="absolute left-2 top-1/2 -translate-y-1/2 w-13 h-16 border-1 rounded-full overflow-hidden">
-        <img src="../public/images/reg image.png"   alt="Your Logo" class="object-cover w-full h-full">
-    </div>
-    <div class="absolute right-10 translate-y-3 border-2 bg-yellow-400">
-        <button>logout </button>
-    </div>
-    <div class="ml-12">SOCIET NAME</div>
+  <div class="grid gap-4 w-full max-w-7xl min-h-screen p-4 rounded-2xl shadow-2xl bg-white
+              grid-cols-1 md:grid-cols-4 lg:grid-cols-4">
 
-</div>
-    <!-- Sidebar -->
-<div class="bg-white md:row-span-9 sm:row-span-10 md:col-span-3 col-span-2 border-2 text-center py-2 font-bold shadow-xl flex flex-col md:flex-row">
-    <div class="w-full md:w-3/4 p-4 border-b-2 md:border-b-0 md:border-r-2 border-gray-200">
-        <h3 class="text-lg font-semibold mb-2">Public Notice</h3>
-        <p>This is the larger section for important notices.</p>
+    <div class="bg-gradient-to-r from-blue-700 to-blue-900 md:row-span-1 md:col-span-4 col-span-12
+                p-4 text-white font-extrabold shadow-lg rounded-xl
+                flex items-center justify-between relative z-10">
+        <div class="absolute left-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full overflow-hidden shadow-md border-2 border-blue-300">
+            <img src="/images/SMS.png" alt="Society Logo" class="object-cover w-full h-full p-1">
+        </div>
+        <div class="ml-24 text-2xl tracking-wide">SOCIETY NAME</div>
+        
+        <div class="relative">
+            <button class="bg-blue-300 hover:bg-blue-400 text-blue-800 font-bold py-2 px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105">
+                Logout
+            </button>
+        </div>
     </div>
 
-    <div class="w-full md:w-1/4 p-4">
-        <h3 class="text-md font-semibold mb-2">Private Notice</h3>
-        <ul class="list-disc list-inside text-left">
-            <li>Link 1</li>
-            <li>Link 2</li>
-        </ul>
+    <div class="bg-white md:row-span-9 sm:row-span-10 md:col-span-3 col-span-12
+                border-2 border-gray-200 text-center font-bold shadow-lg rounded-xl
+                flex flex-col md:flex-row overflow-hidden">
+        <div class="w-full md:w-3/4 p-6 border-b-2 md:border-b-0 md:border-r-2 border-gray-200 text-left flex flex-col justify-start">
+            <h3 class="text-xl md:text-2xl font-extrabold mb-4 text-blue-800">Public Notices</h3>
+            <div class="space-y-3 text-gray-700 text-base flex-grow overflow-y-auto custom-scrollbar pr-2">
+                <p class="bg-gray-50 p-3 rounded-lg shadow-sm">
+                    <strong class="text-blue-600">New Event:</strong> Annual general meeting on 25th May at 7 PM. All members are invited!
+                </p>
+                <p class="bg-gray-50 p-3 rounded-lg shadow-sm">
+                    <strong class="text-blue-600">Maintenance Alert:</strong> Server downtime on 10th June from 9 AM to 1 PM.
+                </p>
+                <p class="bg-gray-50 p-3 rounded-lg shadow-sm">
+                    <strong class="text-blue-600">Important Update:</strong> Quarterly financial review scheduled for 15th June. Agenda circulated via email.
+                </p>
+                 <p class="bg-gray-50 p-3 rounded-lg shadow-sm">
+                    <strong class="text-blue-600">New Event:</strong> Annual general meeting on 25th May at 7 PM. All members are invited!
+                </p>
+                <p class="bg-gray-50 p-3 rounded-lg shadow-sm">
+                    <strong class="text-blue-600">Maintenance Alert:</strong> Server downtime on 10th June from 9 AM to 1 PM.
+                </p>
+                <p class="bg-gray-50 p-3 rounded-lg shadow-sm">
+                    <strong class="text-blue-600">Important Update:</strong> Quarterly financial review scheduled for 15th June. Agenda circulated via email.
+                </p>
+            </div>
+        </div>
+
+        <div class="w-full md:w-1/4 p-6 text-left flex flex-col justify-start">
+            <h3 class="text-xl md:text-2xl font-extrabold mb-4 text-gray-700">Private Notices</h3>
+            <ul class="list-disc list-inside text-gray-700 space-y-2 flex-grow overflow-y-auto custom-scrollbar pr-2">
+                <li><a href="#" class="text-blue-600 hover:underline">Minutes of last executive meeting</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Member directory update</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">New policy on data privacy</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Financial report Q1 2024</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Minutes of last executive meeting</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Member directory update</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">New policy on data privacy</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Financial report Q1 2024</a></li>
+            </ul>
+        </div>
     </div>
-</div>
-    <!-- Main -->
-    <div class="bg-white col-span-2 sm:row-span-10 col-span-1 md:row-span-9 border-2  shadow-xl   md:col-span-1 text-center py-4 font-bold">EVENTS</div>
 
-    <!-- Content Boxes -->
-   
+    <div class="bg-gradient-to-br from-blue-500 to-blue-600 col-span-12 md:col-span-1 md:row-span-9
+                p-6 text-white font-extrabold shadow-lg rounded-xl
+                flex flex-col items-center justify-center text-center">
+        <div class="text-4xl mb-4">🗓️</div>
+        <div class="text-2xl md:text-3xl tracking-wide">EVENTS</div>
+        <p class="mt-2 text-blue-100 text-sm">Upcoming activities & deadlines.</p>
+    </div>
 
-    <!-- Footer -->
-    <div class="bg-white col-span-1 md:col-span-2 border-2 md:row-span-2 shadow-xl col-span-2  text-center py-2 font-bold">MANAGEMENT SYSTEM </div>
-     <div class="bg-white col-span-1 md:col-span-2 border-2 shadow-xl md:row-span-2 col-span-2   text-center py-2 font-bold">AUTHORITY CONTACT NO</div>
+    <div class="bg-gradient-to-r from-slate-600 to-slate-800 col-span-12 md:col-span-2 md:row-span-2
+                p-4 text-white font-extrabold shadow-lg rounded-xl
+                flex flex-col items-center justify-center">
+        <div class="text-3xl mb-2">⚙️</div>
+        <div class="text-xl tracking-wide">MANAGEMENT SYSTEM</div>
+        <p class="mt-1 text-slate-100 text-sm">Efficient operations, streamlined processes.</p>
+    </div>
+
+    <div class="bg-gradient-to-r from-gray-500 to-gray-700 col-span-12 md:col-span-2 md:row-span-2
+                p-4 text-white font-extrabold shadow-lg rounded-xl
+                flex flex-col items-center justify-center">
+        <div class="text-3xl mb-2">📞</div>
+        <div class="text-xl tracking-wide">AUTHORITY CONTACT</div>
+        <p class="mt-1 text-gray-100 text-sm">Direct lines for urgent queries.</p>
+    </div>
   </div>
 
 </body>
