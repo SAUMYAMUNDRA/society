@@ -144,14 +144,23 @@
     },
     body: JSON.stringify(formData),
   })
-    .then((res) => res.json())
-    .then((data) => {
-      alert(data.message || "Saved Successfully");
-    })
-    .catch((err) => {
-      alert("Something went wrong");
-      console.error(err);
-    });
+    .then((res) => {
+    if (!res.ok) {
+      // Force error to go to catch block
+      return res.json().then((err) => {
+        throw new Error(err.error || "Unknown server error");
+      });
+    }
+    return res.json(); // Continue to next .then if no error
+  })
+  .then((data) => {
+    window.location.href = '/';
+
+  })
+  .catch((err) => {
+    alert("Error: " + err.message);
+    console.error("Fetch error:", err);
+  });
 }
       }
 

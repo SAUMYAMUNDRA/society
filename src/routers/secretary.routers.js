@@ -1,13 +1,17 @@
 import express from "express";
 import { Secretary } from "../Models/Seceratary.models.js";
+import { isLoggedIn } from "../middlewares/auth.middlewares.js";
 
 const router = express.Router();
 
+/* ----------------------------------------------
+   Route: Register Secretary
+   Endpoint: POST /api/secretary
+------------------------------------------------ */
 router.post("/api/secretary", async (req, res) => {
-  
   try {
-    console.log("recieved data",req.body);
-    
+    console.log("Received data:", req.body);
+
     const {
       name,
       email,
@@ -19,16 +23,27 @@ router.post("/api/secretary", async (req, res) => {
       cpass,
       fullAddress,
     } = req.body;
+
+    // Validate required fields
     if (
-      !name || !email || !phone || !dob ||
-      !societyName || !societyAddress ||
-      !password || !cpass || !fullAddress
+      !name ||
+      !email ||
+      !phone ||
+      !dob ||
+      !societyName ||
+      !societyAddress ||
+      !password ||
+      !cpass ||
+      !fullAddress
     ) {
-      console.log("return data");
-      
+      console.log("Missing required fields");
       return res.status(400).json({ error: "All fields are required." });
-      
     }
+    const user = await Secretary.findOne({ email });
+     if(user){
+        return     res.status(500).json({ error: "user already exists with same email" });
+     }
+    // Save to database
     const newEntry = new Secretary({
       name,
       email,
@@ -40,8 +55,8 @@ router.post("/api/secretary", async (req, res) => {
       cpass,
       fullAddress,
     });
-    console.log("sending data to db");
-    
+
+    console.log("Saving data to DB");
     await newEntry.save();
 
     res.status(201).json({ message: "Secretary data saved successfully" });
@@ -50,34 +65,44 @@ router.post("/api/secretary", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-// POST /api/secretary/login
+
+/* ----------------------------------------------
+   Route: Secretary Login
+   Endpoint: POST /api/secretary/login
+------------------------------------------------ */
 router.post("/api/secretary/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if both fields are provided
+    // Validate fields
     if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ error: "Email and password are required" });
     }
 
-    // Find the secretary by email
+    // Find user in DB
     const user = await Secretary.findOne({ email });
 
-    // If user not found or password doesn't match
+    // Check user and password
     if (!user || user.password !== password) {
-      console.log("user not found or pass dont match");
-      
+      console.log("Invalid email or password");
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Success
-    res.status(200).json({ message: "Login successful", user });
+    // ✅ Store session
+    req.session.societyEmail = email;
+    console.log("Session created:", req.session);
+
+    res.status(200).json({ message: "Login successful", email });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-
+router.get("/dashboard",isLoggedIn,function(req,res){
+    res.render("dashboard",{user:req.user})
+})
 
 export default router;
