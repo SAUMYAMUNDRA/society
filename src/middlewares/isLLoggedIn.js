@@ -1,9 +1,9 @@
 export function isLoggedIn(req, res, next) {
-  if (req.session && req.session.societyEmail) {
+  if (req.session && req.session.idr) {
     // User is logged in
     next(); // allow access
   } else {
-    // User is not logged in
+    alert("plz login first");
     res.redirect("/login");
   }
 }

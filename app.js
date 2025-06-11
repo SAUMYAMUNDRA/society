@@ -5,8 +5,10 @@ import { fileURLToPath } from "url";
 import secretaryRouter from "./src/routers/secretary.routers.js";
 import { connectDB } from "../society/src/Databases/db.js";
 import session from "express-session";
-import { Secretary } from "./src/Models/Seceratary.models.js"; // Adjust path if needed
-import { isLoggedIn } from "./src/middlewares/auth.middlewares.js";
+import { Secretary } from "./src/Models/Seceratary.models.js"; 
+import { isLoggedIn } from "./src/middlewares/isLLoggedIn.js";
+import isSecretary from './src/middlewares/isSecretary.auth.js';
+import { Notice } from "./src/Models/Notice.models.js";
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
@@ -44,12 +46,14 @@ app.get("/register", (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "registration_page.html"));
 });
 
+app.get("/notice", isSecretary, (req, res) => {
+  res.sendFile(path.join(__dirname, "pages", "notice_page.html"));
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "landing_page.html"));
 });
-app.get("/society", isLoggedIn,(req, res) => {
-  res.sendFile(path.join(__dirname, "pages", "society.html"));
-});
+
 app.get("/login", (req, res) => {
   if (req.session.societyEmail) {
     return res.redirect("/dashboard");
@@ -77,7 +81,7 @@ app.get("/logout", (req, res) => {
 // EJS route: dashboard
 app.get("/dashboard", async (req, res) => {
   if (!req.session.societyEmail) {
-    return res.redirect("/login");
+    return res.redirect("/seclogin");
   }
 
   try {
@@ -102,6 +106,11 @@ app.use(secretaryRouter);
 // Start server
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
+});
+
+app.get('/society', async (req, res) => {
+  const notices = await Notice.find({"secretaryId":req.session.idr}); // Replace with your DB fetch logic
+  res.render('society', { notices });
 });
 
 // Connect to MongoDB

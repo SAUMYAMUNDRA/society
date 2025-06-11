@@ -1,7 +1,9 @@
 import express from "express";
 import { Secretary } from "../Models/Seceratary.models.js";
-import { isLoggedIn } from "../middlewares/auth.middlewares.js";
+import { isLoggedIn } from "../middlewares/isLLoggedIn.js";
 import { User } from "../Models/User.models.js";
+import { Notice } from "../Models/Notice.models.js";
+import isSecretary from "../middlewares/isSecretary.auth.js";
 const router = express.Router();
 
 /* ----------------------------------------------
@@ -91,8 +93,8 @@ router.post("/api/secretary/login", async (req, res) => {
     }
 
     // ✅ Store session
-    req.session.societyEmail = email;
     req.session.idr=user._id;
+    req.session.pass = password;
     console.log("Session created:", req.session);
 
     res.status(200).json({ message: "Login successful", email });
@@ -112,7 +114,7 @@ router.get("/dashboard", isLoggedIn, function (req, res) {
    Endpoint: POST /api/addmember
 */
 
-router.post("/api/addmember", async (req, res) => {
+router.post("/api/addmember",isSecretary, async (req, res) => {
   try {
     console.log("Received data:", req.body);
 
@@ -129,7 +131,7 @@ router.post("/api/addmember", async (req, res) => {
       console.log("Missing required fields");
       return res.status(400).json({ error: "All fields are required." });
     }
-    const user = await User.findOne({ phone,secretaryId:id});
+    const user = await User.findOne({ phone });
     if (user) {
       return res.status(500).json({ error: "user already exists with same phone no in your society" });
     }
@@ -149,6 +151,110 @@ router.post("/api/addmember", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
+
+/* ----------------------------------------------
+   Route: seceratory is publishing notice
+   Endpoint: POST /api/notice
+*/
+
+
+router.post("/api/notice",isSecretary, async (req, res) => {
+  try {
+    console.log("Received data:", req.body);
+
+    const {
+      title,
+      content
+    } = req.body;
+    const secretary = await Secretary.findOne({ _id:req.session.idr});
+    const id = secretary._id;
+    
+    if (
+      !title || !content
+    ) {
+      console.log("Missing required fields");
+      return res.status(400).json({ error: "All fields are required." });
+    }
+    // Save to database
+   const newEntry = new Notice({
+  title,
+  content,
+  secretaryId: id
+});
+
+    console.log("Saving data to DB");
+    await newEntry.save();
+
+   res.redirect('/notice');
+  } catch (error) {
+    console.error("Error saving data:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+router.post("/api/member/login", async (req, res) => {
+  try {
+    console.log("Received data:", req.body);
+
+    const {
+      PhoneNo,
+      password
+    } = req.body;
+
+    if (
+      !PhoneNo || !password
+    ) {
+      console.log("Missing required fields");
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
+
+    const user = await User.findOne({ "PhoneNo":  PhoneNo });
+    if(user){
+        req.session.idr=user.secretaryId;
+        req.session.userid=user._id;
+    }
+    
+
+
+   res.redirect('/notice');
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
