@@ -19,14 +19,14 @@
     <div class="w-full md:w-1/2 p-8">
       <h2 class="text-2xl font-bold mb-6 text-center" id="header">Login To Get Started </h2>
 
-      <form id="simpleForm">
+      <form id="simpleForm" method="post" action="/api/member/login">
         <div class="mb-4">
           <label class="block mb-1 font-medium">PhoneNo</label>
-          <input type="tel" id="tel" required class="w-full p-2 border rounded" />
+          <input type="tel" id="tel" name="PhoneNo" required class="w-full p-2 border rounded" />
         </div>
         <div class="mb-4">
-          <label class="block mb-1 font-medium">Password</label>
-          <input type="password" id="password" required class="w-full p-2 border rounded" />
+          <label class="block mb-1 font-medium" >Password</label>
+          <input type="password" id="password" name="password" required class="w-full p-2 border rounded" />
         </div>
 
         <div class="flex justify-end mt-6">
@@ -41,45 +41,7 @@
     </div>
   </div>
 
-  <script>
-    
-
-    document.getElementById("simpleForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const PhoneNo = document.getElementById("PhoneNo").value;
-      const password = document.getElementById("password").value;
-
-      if (!PhoneNo || !password) {
-        alert("Please fill all the details");
-        return;
-      }
-
-    fetch("/api/member/login", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ PhoneNo, password }),
-})
-  .then(async (res) => {
-    const data = await res.json();
-
-    if (!res.ok) {
-      
-      alert(data.error || "Login failed");
-      return;
-    }
-
-     window.location.href = "/society"; 
-    
-   
-  })
-  .catch((err) => {
-    alert("Something went wrong");
-    console.error(err);
-  });
-});
-  </script>
+  
+ 
 </body>
 </html>

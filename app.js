@@ -54,14 +54,22 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "landing_page.html"));
 });
 
-app.get("/login", (req, res) => {
-  if (req.session.societyEmail) {
-    return res.redirect("/dashboard");
+app.get("/seclogin", (req, res) => {
+  if (req.session.idr) {
+    return res.redirect("/society");
   }
   res.sendFile(path.join(__dirname, "pages", "login_page.html"));
 });
 
-app.get("/addmember", isLoggedIn,(req, res) => {
+
+app.get("/login", (req, res) => {
+  if (req.session.idr) {
+    return res.redirect("/society");
+  }
+  res.sendFile(path.join(__dirname, "pages", "memberlogin_page.html"));
+});
+
+app.get("/addmember", isLoggedIn, isSecretary,(req, res) => {
   res.sendFile(path.join(__dirname, "pages", "addmembers_page.html"));
 });
 
@@ -109,6 +117,8 @@ app.listen(PORT, () => {
 });
 
 app.get('/society', async (req, res) => {
+  console.log(req.session.idr);
+  
   const notices = await Notice.find({"secretaryId":req.session.idr}); // Replace with your DB fetch logic
   res.render('society', { notices });
 });

@@ -122,7 +122,7 @@ router.post("/api/addmember",isSecretary, async (req, res) => {
       phone,
       flatNo
     } = req.body;
-    const secretary = await Secretary.findOne({ email: req.session.societyEmail });
+    const secretary = await Secretary.findOne({ _id: req.session.idr });
     const id = secretary._id;
     // Validate required fields
     if (
@@ -228,16 +228,19 @@ router.post("/api/member/login", async (req, res) => {
       return res.status(400).json({ error: "All fields are required." });
     }
 
-
-    const user = await User.findOne({ "PhoneNo":  PhoneNo });
+    
+    
+    const user = await User.findOne({ "phone":  PhoneNo });
     if(user){
+      console.log("adding to session");
+      
         req.session.idr=user.secretaryId;
         req.session.userid=user._id;
     }
     
 
 
-   res.redirect('/notice');
+   res.redirect('/society');
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
