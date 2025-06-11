@@ -1,7 +1,7 @@
 import express from "express";
 import { Secretary } from "../Models/Seceratary.models.js";
 import { isLoggedIn } from "../middlewares/auth.middlewares.js";
-
+import { User } from "../Models/User.models.js";
 const router = express.Router();
 
 /* ----------------------------------------------
@@ -40,9 +40,9 @@ router.post("/api/secretary", async (req, res) => {
       return res.status(400).json({ error: "All fields are required." });
     }
     const user = await Secretary.findOne({ email });
-     if(user){
-        return     res.status(500).json({ error: "user already exists with same email" });
-     }
+    if (user) {
+      return res.status(500).json({ error: "user already exists with same email" });
+    }
     // Save to database
     const newEntry = new Secretary({
       name,
@@ -92,6 +92,7 @@ router.post("/api/secretary/login", async (req, res) => {
 
     // ✅ Store session
     req.session.societyEmail = email;
+    req.session.idr=user._id;
     console.log("Session created:", req.session);
 
     res.status(200).json({ message: "Login successful", email });
@@ -101,8 +102,55 @@ router.post("/api/secretary/login", async (req, res) => {
   }
 });
 
-router.get("/dashboard",isLoggedIn,function(req,res){
-    res.render("dashboard",{user:req.user})
+router.get("/dashboard", isLoggedIn, function (req, res) {
+  res.render("dashboard", { user: req.user })
 })
+
+
+/* ----------------------------------------------
+   Route: seceratory is registyring new member
+   Endpoint: POST /api/addmember
+*/
+
+router.post("/api/addmember", async (req, res) => {
+  try {
+    console.log("Received data:", req.body);
+
+    const {
+      phone,
+      flatNo
+    } = req.body;
+    const secretary = await Secretary.findOne({ email: req.session.societyEmail });
+    const id = secretary._id;
+    // Validate required fields
+    if (
+      !phone || !flatNo
+    ) {
+      console.log("Missing required fields");
+      return res.status(400).json({ error: "All fields are required." });
+    }
+    const user = await User.findOne({ phone,secretaryId:id});
+    if (user) {
+      return res.status(500).json({ error: "user already exists with same phone no in your society" });
+    }
+    // Save to database
+   const newEntry = new User({
+  phone,
+  flatNo,
+  secretaryId: id
+});
+
+    console.log("Saving data to DB");
+    await newEntry.save();
+
+   res.redirect('/addmember');
+  } catch (error) {
+    console.error("Error saving data:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+
 
 export default router;

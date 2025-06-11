@@ -6,8 +6,10 @@ import secretaryRouter from "./src/routers/secretary.routers.js";
 import { connectDB } from "../society/src/Databases/db.js";
 import session from "express-session";
 import { Secretary } from "./src/Models/Seceratary.models.js"; // Adjust path if needed
-
+import { isLoggedIn } from "./src/middlewares/auth.middlewares.js";
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+
 const PORT = 3000;
 
 // Resolve __dirname in ES modules
@@ -45,7 +47,7 @@ app.get("/register", (req, res) => {
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "landing_page.html"));
 });
-app.get("/society", (req, res) => {
+app.get("/society", isLoggedIn,(req, res) => {
   res.sendFile(path.join(__dirname, "pages", "society.html"));
 });
 app.get("/login", (req, res) => {
@@ -54,6 +56,12 @@ app.get("/login", (req, res) => {
   }
   res.sendFile(path.join(__dirname, "pages", "login_page.html"));
 });
+
+app.get("/addmember", isLoggedIn,(req, res) => {
+  res.sendFile(path.join(__dirname, "pages", "addmembers_page.html"));
+});
+
+
 
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {

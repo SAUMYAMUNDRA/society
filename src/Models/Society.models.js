@@ -16,7 +16,12 @@ const societySchema = new mongoose.Schema({
     type:String,
     required:true,
      index: true
+  },
+  userId:{
+    type:[],
+    
   }
+
 }, { timestamps: true });
 
 export const Society = mongoose.model("Society", societySchema);
