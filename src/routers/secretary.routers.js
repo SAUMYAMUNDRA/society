@@ -4,6 +4,7 @@ import { isLoggedIn } from "../middlewares/isLLoggedIn.js";
 import { User } from "../Models/User.models.js";
 import { Notice } from "../Models/Notice.models.js";
 import isSecretary from "../middlewares/isSecretary.auth.js";
+import {Createticket} from '../Models/Createticket.models.js'
 const router = express.Router();
 
 /* ----------------------------------------------
@@ -251,15 +252,46 @@ router.post("/api/member/login", async (req, res) => {
 
 
 
+router.post("/api/rms/createticket", async (req, res) => {
+  try {
+    const {
+      category,
+      date_available,
+      contact_no,
+      description
+    } = req.body;
+    const userId = req.session.userid;
 
+   
+    
+     const secretary = await Secretary.findOne({ _id: req.session.idr });
+     console.log("seceratary:",secretary);
+     
+    const id = secretary._id;
 
+    const user= await User.findOne({_id:userId})
+    
+    console.log(user);
+    
+    
+    const secId = id; 
+    const flatNo = user.flatNo; 
+    
+    
+    const ticket = new Createticket ({
+      Userid: userId,
+      Secid: secId,
+      Flatno: flatNo,
+      Category: category,
+      Prefered_date_and_time: date_available,
+      Conatctno: contact_no,
+      Description: description
+    });
 
-
-
-
-
-
-
-
-
-export default router;
+  await ticket.save();
+console.log("quesry received");
+  } catch (error) {
+    console.error("Error creating ticket:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});export default router;

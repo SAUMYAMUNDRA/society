@@ -50,6 +50,12 @@ app.get("/notice", isSecretary, (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "notice_page.html"));
 });
 
+app.get("/rms/createticket", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(__dirname, "pages", "rms_page.html"));
+});
+
+
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "landing_page.html"));
 });
