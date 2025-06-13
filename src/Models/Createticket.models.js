@@ -31,6 +31,10 @@ const CreateticketSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    state:{
+        type:String,
+        default:"open",
+    }
 });
 
 export const Createticket = mongoose.model("Createticket", CreateticketSchema);

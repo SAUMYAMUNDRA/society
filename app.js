@@ -9,6 +9,7 @@ import { Secretary } from "./src/Models/Seceratary.models.js";
 import { isLoggedIn } from "./src/middlewares/isLLoggedIn.js";
 import isSecretary from './src/middlewares/isSecretary.auth.js';
 import { Notice } from "./src/Models/Notice.models.js";
+import { Createticket } from "./src/Models/Createticket.models.js";
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
@@ -54,6 +55,25 @@ app.get("/rms/createticket", isLoggedIn, (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "rms_page.html"));
 });
 
+
+app.get("/rmshome", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(__dirname, "pages", "rmshome_page.html"));
+});
+
+app.get("/api/tickets", isLoggedIn, async (req, res) => {
+  try {
+    const tickets = await Createticket
+      .find({ Userid: req.user._id })     
+      .sort({ _id: -1 })
+      .populate("Userid", "name flatNo");    
+
+    console.log("Fetched tickets:", tickets);
+    res.json(tickets);
+  } catch (err) {
+    console.error("Failed to fetch tickets:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 app.get("/", (req, res) => {

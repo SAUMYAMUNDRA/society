@@ -285,11 +285,12 @@ router.post("/api/rms/createticket", async (req, res) => {
       Category: category,
       Prefered_date_and_time: date_available,
       Conatctno: contact_no,
-      Description: description
+      Description: description,
     });
 
   await ticket.save();
-console.log("quesry received");
+console.log("query received");
+
   } catch (error) {
     console.error("Error creating ticket:", error);
     res.status(500).send("Internal Server Error");

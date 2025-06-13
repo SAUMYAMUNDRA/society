@@ -1,0 +1,74 @@
+<!-- pages/consent_page.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RMS Consent</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-100 flex items-center justify-center min-h-screen p-4">
+  <div class="bg-white rounded-2xl shadow-lg w-full max-w-3xl">
+    <!-- Nav -->
+    <div class="flex divide-x border-b border-blue-200">
+      <a href="/log-request" class="flex-1 flex items-center justify-center py-4 hover:bg-blue-50">
+        <svg class="h-6 w-6 mr-2 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 4h16v12H5.17L4 17.17V4z"/>
+        </svg>
+        <span class="font-semibold text-blue-800">Log Request</span>
+      </a>
+      <a href="showtickets_page.html" class="flex-1 flex items-center justify-center py-4 hover:bg-blue-50">
+        <svg class="h-6 w-6 mr-2 text-blue-800" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="font-semibold text-blue-800">RMS History</span>
+      </a>
+    </div>
+
+    <!-- Checklist -->
+    <div class="p-8 space-y-6">
+      <ul class="space-y-4">
+        <li class="flex items-start">
+          <svg class="h-6 w-6 flex-shrink-0 text-blue-600 mt-1" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 12l2 2l4 -4"/>
+          </svg>
+          <p class="ml-3 text-gray-700">I have not shared my UMS password with anyone.</p>
+        </li>
+        <li class="flex items-start">
+          <svg class="h-6 w-6 flex-shrink-0 text-blue-600 mt-1" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 12l2 2l4 -4"/>
+          </svg>
+          <p class="ml-3 text-gray-700">I am responsible for the content typed in query.</p>
+        </li>
+        <li class="flex items-start">
+          <svg class="h-6 w-6 flex-shrink-0 text-blue-600 mt-1" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 12l2 2l4 -4"/>
+          </svg>
+          <p class="ml-3 text-gray-700">I understand that necessary disciplinary action can be initiated against me in case of use of derogatory words or false statements against any Student/Faculty/Staff/Higher Authority.</p>
+        </li>
+        <li class="flex items-start">
+          <svg class="h-6 w-6 flex-shrink-0 text-blue-600 mt-1" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 12l2 2l4 -4"/>
+          </svg>
+          <p class="ml-3 text-gray-700">The information given by me regarding the complaint/request is true to the best of my knowledge and if found false/wrong, necessary disciplinary action can be initiated against me.</p>
+        </li>
+        <li class="flex items-start">
+          <svg class="h-6 w-6 flex-shrink-0 text-blue-600 mt-1" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 12l2 2l4 -4"/>
+          </svg>
+          <p class="ml-3 text-gray-700">I have read the policy / UMS Notification related to the concerned matter already before submitting the RMS and I am unable to find the answer related to my query.</p>
+        </li>
+      </ul>
+
+      <div class="text-center mt-8">
+        <a href="rmsgenerateticket_page.html">
+          <button id="agreeBtn"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow">
+            Agree &amp; Proceed
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
