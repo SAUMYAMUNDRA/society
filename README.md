@@ -7,7 +7,7 @@ A full-stack web application built to manage various aspects of a residential so
 - 🔐 **Role-Based Authentication**: Secure login/logout functionality for members and the secretary using session-based authentication.
 - 📢 **Notice Management**: Post and display notices in real-time using MongoDB.
 - 🛠️ **Complaint Ticketing System**: Members can raise complaints; coordinators can view and resolve them.
-- 💰 **Financial Management** *(planned/optional)*: Basic ledger or tracking of maintenance payments.
+- 💰 **Financial Management**: Basic ledger or tracking of maintenance payments.
 - 🧾 **QR-based Attendance (Optional)**: Generate and scan QR codes for events or daily attendance *(if implemented)*.
 - 📱 **Responsive UI**: Clean and modern interface using Tailwind CSS, optimized for all screen sizes.
 
@@ -15,18 +15,56 @@ A full-stack web application built to manage various aspects of a residential so
 
 - **Frontend**: HTML, Tailwind CSS, JavaScript
 - **Backend**: Node.js, Express.js
-- **Database**: MongoDB (using Mongoose)
+- **Database**: MongoDB (using Mongoose) using compass locally
 - **Session Management**: `express-session`, cookies
+
 ## 📁 Project Structure
 
 society-management-system/
 │
-├── public/           # Static assets (CSS, JS)
-├── views/            # HTML files (notices, login, dashboard, etc.)
-├── routes/           # Express routes (auth, notices, complaints)
-├── models/           # Mongoose models (User, Notice, Complaint)
-├── app.js            # Main server file
+├── pages/                     # HTML pages (login, registration, notice, ticket, etc.)
+│   ├── addmembers_page.html
+│   ├── landing_page.html
+│   ├── login_page.html
+│   ├── memberlogin_page.html
+│   ├── notice_page.html
+│   ├── registration_page.html
+│   ├── rmsgenerateticket_page.html
+│   ├── rmshome_page.html
+│   ├── showtickets_page.html
+│   └── society.html
+│
+├── public/                    # Static files
+│   ├── css/
+│   └── images/
+│
+├── src/
+│   ├── Databases/
+│   │   └── db.js              # MongoDB connection setup
+│   │
+│   ├── middlewares/          # Auth middlewares
+│   │   ├── isLoggedIn.js
+│   │   └── isSecretary.auth.js
+│   │
+│   ├── Models/               # Mongoose models
+│   │   ├── Createticket.models.js
+│   │   ├── Notice.models.js
+│   │   ├── Secreatary.models.js
+│   │   ├── Society.models.js
+│   │   └── User.models.js
+│   │
+│   └── routers/
+│       └── secretary.routers.js
+│
+├── views/                    # EJS templates
+│   ├── dashboard.ejs
+│   └── society.ejs
+│
+├── .env                      # Environment variables
+├── .gitignore
+├── app.js                    # Entry point
 ├── package.json
+├── package-lock.json
 └── README.md
 
 ## 🔧 Installation
@@ -41,12 +79,21 @@ cd society-management-system
 2. **Install dependencies**
 
 ```bash
-npm install
+npm i
 ```
 
-3. **Set up MongoDB**
+3.Install all other dependencies used in this project 
 
-Make sure you have MongoDB installed locally or use a MongoDB Atlas cloud database.
+```bash
+npm install cookie-parser ejs express express-session mongoose postman
+  
+```
+
+
+
+4. **Set up MongoDB**
+
+Make sure you have MongoDB installed locally and use Compass.
 
 Create a `.env` file in the root directory and add:
 
@@ -56,14 +103,20 @@ SESSION_SECRET=your_session_secret
 PORT=3000
 ```
 
-4. **Run the application**
+5. **Run the application**
 
 ```bash
-node app.js
+nodemon app.js
 ```
 
-5. **Open in Browser**
+6. **Open in Browser**
 
 Navigate to: [http://localhost:3000](http://localhost:3000)
 
+
+
+## 📬 Feedback & Contributions
+
+Feel free to fork this repo, raise issues, or submit pull requests.  
+For feedback or suggestions, contact me via GitHub or email=>mundrasaumya17@gmail.com
 
