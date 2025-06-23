@@ -237,6 +237,7 @@ router.post("/api/member/login", async (req, res) => {
       
         req.session.idr=user.secretaryId;
         req.session.userid=user._id;
+         console.log("✅ Session set:", req.session);
     }
     
 
@@ -258,7 +259,8 @@ router.post("/api/rms/createticket", async (req, res) => {
       category,
       date_available,
       contact_no,
-      description
+      description,
+      
     } = req.body;
     const userId = req.session.userid;
 
@@ -286,11 +288,12 @@ router.post("/api/rms/createticket", async (req, res) => {
       Prefered_date_and_time: date_available,
       Conatctno: contact_no,
       Description: description,
+      Status: "Pending"
     });
 
   await ticket.save();
 console.log("query received");
-
+res.redirect('/showtickets_page.html');
   } catch (error) {
     console.error("Error creating ticket:", error);
     res.status(500).send("Internal Server Error");

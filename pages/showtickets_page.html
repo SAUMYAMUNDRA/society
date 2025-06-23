@@ -1,10 +1,9 @@
-<!-- pages/rmshome_page.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RMS History</title>
+  <title>RMS Ticket History</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-blue-100 min-h-screen p-4">
@@ -12,12 +11,16 @@
     <!-- Nav -->
     <div class="flex divide-x border-b border-blue-200">
       <a href="rmsgenerateticket_page.html" class="flex-1 flex items-center justify-center py-4 hover:bg-blue-50">
-        <svg class="h-6 w-6 mr-2 text-blue-600" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H5.17L4 17.17V4z"/></svg>
+        <svg class="h-6 w-6 mr-2 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 4h16v12H5.17L4 17.17V4z"/>
+        </svg>
         <span class="font-semibold text-blue-800">Log Request</span>
       </a>
-      <a href="/rmshome" class="flex-1 flex items-center justify-center py-4 bg-blue-50">
-        <svg class="h-6 w-6 mr-2 text-blue-800" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span class="font-semibold text-blue-800">RMS History</span>
+      <a href="/showtickets_page.html" class="flex-1 flex items-center justify-center py-4 bg-blue-50">
+        <svg class="h-6 w-6 mr-2 text-blue-800" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="font-semibold text-blue-800">My Tickets</span>
       </a>
     </div>
 
@@ -28,26 +31,24 @@
         <span id="total-count" class="inline-flex items-center justify-center bg-blue-600 text-white rounded-full h-6 w-6">0</span>
       </div>
       <div class="flex items-center space-x-2">
-        <span class="font-semibold text-blue-800">Open</span>
-        <span id="open-count" class="inline-flex items-center justify-center bg-blue-800 text-white rounded-full h-6 w-6">0</span>
+        <span class="font-semibold text-blue-800">Pending</span>
+        <span id="pending-count" class="inline-flex items-center justify-center bg-yellow-500 text-white rounded-full h-6 w-6">0</span>
       </div>
       <div class="flex items-center space-x-2">
         <span class="font-semibold text-blue-800">Closed</span>
-        <span id="closed-count" class="inline-flex items-center justify-center bg-blue-500 text-white rounded-full h-6 w-6">0</span>
+        <span id="closed-count" class="inline-flex items-center justify-center bg-blue-800 text-white rounded-full h-6 w-6">0</span>
       </div>
     </div>
 
     <!-- Ticket List -->
-    <div id="ticket-list" class="p-6 space-y-6">
-      <!-- JS will inject tickets here -->
-    </div>
+    <div id="ticket-list" class="p-6 space-y-6"></div>
   </div>
 
   <template id="ticket-template">
     <div class="bg-blue-50 rounded-xl shadow-sm">
       <div class="flex items-center justify-between px-6 py-3 border-l-4 bg-blue-100 rounded-t-xl">
-        <span class="font-semibold"></span>
-        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+        <span class="font-semibold category"></span>
+        <svg class="h-6 w-6 status-icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-1-6l-5-5 1.414-1.414L11 13.172l6.586-6.586L19 8l-8 8z"/>
         </svg>
       </div>
@@ -76,27 +77,28 @@
 
       const list = document.getElementById('ticket-list');
       const tpl = document.getElementById('ticket-template');
-      let open = 0, closed = 0;
+      let pending = 0, closed = 0;
 
       tickets.forEach(t => {
         const clone = tpl.content.cloneNode(true);
-        clone.querySelector('.flatno').textContent = t.Flatno;
-        clone.querySelector('.category').textContent = t.Category;
-        clone.querySelector('.preferred').textContent = t.Prefered_date_and_time;
-        clone.querySelector('.description-title').textContent = t.Description.slice(0, 30) + '...';
-        clone.querySelector('.description-body').textContent = t.Description;
-        clone.querySelector('.status').textContent = t.state.charAt(0).toUpperCase() + t.state.slice(1);
-        clone.querySelector('.logged-by').textContent = `${t.Userid}`; // or format name if populated
+        clone.querySelector('.flatno').textContent = t.Flatno || '';
+        clone.querySelector('.category').textContent = t.Category || '';
+        clone.querySelector('.preferred').textContent = t.Prefered_date_and_time || '';
+        clone.querySelector('.description-title').textContent = (t.Description || '').slice(0, 30) + '...';
+        clone.querySelector('.description-body').textContent = t.Description || '';
+        clone.querySelector('.status').textContent = t.Status;
+        clone.querySelector('.logged-by').textContent = t.Userid?.flatNo || 'N/A';
 
-        // color-code header border & icon
+        // color logic
         const header = clone.querySelector('div.border-l-4');
         const icon = clone.querySelector('svg');
-        if (t.state === 'closed') {
+
+        if (t.Status === 'Closed') {
           closed++;
           header.classList.add('border-blue-600');
           icon.classList.add('text-blue-600');
         } else {
-          open++;
+          pending++;
           header.classList.add('border-yellow-500');
           icon.classList.add('text-yellow-500');
         }
@@ -104,12 +106,12 @@
         list.appendChild(clone);
       });
 
+      // update counts
       document.getElementById('total-count').textContent = tickets.length;
-      document.getElementById('open-count').textContent = open;
+      document.getElementById('pending-count').textContent = pending;
       document.getElementById('closed-count').textContent = closed;
     }
 
-    // fire on load
     window.addEventListener('DOMContentLoaded', loadTickets);
   </script>
 </body>

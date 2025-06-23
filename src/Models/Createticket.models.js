@@ -34,7 +34,13 @@ const CreateticketSchema = new mongoose.Schema({
     state:{
         type:String,
         default:"open",
-    }
+    },
+    Status: {
+    type: String,
+    enum: ["Pending", "Resolved"],
+    default: "Pending"
+  },
+
 });
 
 export const Createticket = mongoose.model("Createticket", CreateticketSchema);

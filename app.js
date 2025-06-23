@@ -52,7 +52,11 @@ app.get("/notice", isSecretary, (req, res) => {
 });
 
 app.get("/rms/createticket", isLoggedIn, (req, res) => {
-  res.sendFile(path.join(__dirname, "pages", "rms_page.html"));
+  res.sendFile(path.join(__dirname, "pages", "rmsgenerateticket_page.html"));
+});
+
+app.get("/showtickets_page.html", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(__dirname, "pages", "showtickets_page.html"));
 });
 
 
@@ -63,9 +67,9 @@ app.get("/rmshome", isLoggedIn, (req, res) => {
 app.get("/api/tickets", isLoggedIn, async (req, res) => {
   try {
     const tickets = await Createticket
-      .find({ Userid: req.user._id })     
+      .find({ Userid: req.session.userid })     
       .sort({ _id: -1 })
-      .populate("Userid", "name flatNo");    
+      .populate("Userid", "flatNo");    
 
     console.log("Fetched tickets:", tickets);
     res.json(tickets);
@@ -74,6 +78,17 @@ app.get("/api/tickets", isLoggedIn, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+app.get('/test-session', (req, res) => {
+  res.json({
+    idr: req.session.idr,
+    userid: req.session.userid
+  });
+});
+
+
 
 
 app.get("/", (req, res) => {
