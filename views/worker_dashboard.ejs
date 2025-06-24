@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Worker Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <div class="max-w-4xl mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Worker Dashboard</h1>
+    <p class="mb-6">Welcome, Flat No: <%= worker.flatNo %></p>
+
+    <h2 class="text-xl font-semibold mb-2">Tickets in Your Society</h2>
+
+    <% if (tickets.length === 0) { %>
+      <p>No tickets found.</p>
+    <% } else { %>
+      <div class="space-y-4">
+        <% tickets.forEach(ticket => { %>
+          <div class="bg-white p-4 rounded shadow">
+            <p><strong>Flat No:</strong> <%= ticket.Flatno %></p>
+            <p><strong>Category:</strong> <%= ticket.Category %></p>
+            <p><strong>Status:</strong> <%= ticket.Status %></p>
+            <p><strong>Description:</strong> <%= ticket.Description %></p>
+            <p><strong>Preferred Time:</strong> <%= ticket.Prefered_date_and_time %></p>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</body>
+</html>

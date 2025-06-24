@@ -81,12 +81,6 @@ app.get("/api/tickets", isLoggedIn, async (req, res) => {
 
 
 
-app.get('/test-session', (req, res) => {
-  res.json({
-    idr: req.session.idr,
-    userid: req.session.userid
-  });
-});
 
 
 

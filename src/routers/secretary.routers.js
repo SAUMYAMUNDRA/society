@@ -121,7 +121,8 @@ router.post("/api/addmember",isSecretary, async (req, res) => {
 
     const {
       phone,
-      flatNo
+      flatNo,
+      role
     } = req.body;
     const secretary = await Secretary.findOne({ _id: req.session.idr });
     const id = secretary._id;
@@ -140,7 +141,8 @@ router.post("/api/addmember",isSecretary, async (req, res) => {
    const newEntry = new User({
   phone,
   flatNo,
-  secretaryId: id
+  secretaryId: id,
+  role:role || "member"
 });
 
     console.log("Saving data to DB");
@@ -197,6 +199,28 @@ router.post("/api/notice",isSecretary, async (req, res) => {
 
 
 
+/* ----------------------------------------------
+   Route: worker dashboard route
+   Endpoint: POST /api/notice
+*/
+import isWorker from "../middlewares/isWorker.js"; // ⬅️ make sure this import is correct
+
+router.get("/worker-dashboard", isWorker, async (req, res) => {
+  try {
+    const worker = req.user; // from middleware
+
+    const tickets = await Createticket.find({ Secid: worker.secretaryId })
+      .sort({ _id: -1 })
+      .populate("Userid", "flatNo");
+
+    res.render("worker_dashboard", { worker, tickets });
+  } catch (err) {
+    console.error("Worker dashboard error:", err);
+    res.status(500).send("Server Error");
+  }
+});
+
+
 
 
 
@@ -235,14 +259,18 @@ router.post("/api/member/login", async (req, res) => {
     if(user){
       console.log("adding to session");
       
-        req.session.idr=user.secretaryId;
+       
         req.session.userid=user._id;
          console.log("✅ Session set:", req.session);
     }
     
 
 
-   res.redirect('/society');
+   if (user.role === "worker") {
+  res.redirect("/worker-dashboard");
+} else {
+  res.redirect("/society");
+}
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });

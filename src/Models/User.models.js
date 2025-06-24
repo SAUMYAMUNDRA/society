@@ -13,6 +13,11 @@ const UserSchema = new mongoose.Schema({
     type:Schema.Types.ObjectId,
     ref:"Secretary",
     require:true
+  },
+  role: {
+    type: String,
+    enum: ["member", "worker"],
+    default: "member"
   }
 });
 

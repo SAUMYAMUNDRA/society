@@ -2,18 +2,16 @@ import { Secretary } from "../Models/Seceratary.models.js";
 
 const isSecretary = async (req, res, next) => {
   try {
-    const secid=req.session.idr;
-    const secpass=req.session.pass;
+    const secid = req.session.idr;
 
-    const secretary = await Secretary.findOne({ _id: secid,password:secpass });
-    
-    if (!secretary) {
-      return res.status(401).send("Unauthorized access");
-    }
+    if (!secid) return res.redirect("/seclogin");
 
-   
+    const secretary = await Secretary.findById(secid);
 
-     next();
+    if (!secretary) return res.status(401).send("Unauthorized access");
+
+    req.user = secretary; // Optional: for future use
+    next();
   } catch (err) {
     console.error("isSecretary error:", err);
     return res.status(500).send("Server Error");
