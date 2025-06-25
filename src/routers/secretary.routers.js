@@ -221,22 +221,6 @@ router.get("/worker-dashboard", isWorker, async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 router.post("/api/member/login", async (req, res) => {
   try {
     console.log("Received data:", req.body);
@@ -290,19 +274,22 @@ router.post("/api/rms/createticket", async (req, res) => {
       description,
       
     } = req.body;
-    const userId = req.session.userid;
-
    
     
-     const secretary = await Secretary.findOne({ _id: req.session.idr });
+    const userId = req.session.userid;
+   
+    const user= await User.findOne({_id:userId})
+    
+    console.log("user:",user);
+    
+    
+   
+    
+    const secretary = await Secretary.findOne({ _id: user.secretaryId });
      console.log("seceratary:",secretary);
      
     const id = secretary._id;
 
-    const user= await User.findOne({_id:userId})
-    
-    console.log(user);
-    
     
     const secId = id; 
     const flatNo = user.flatNo; 
