@@ -8,7 +8,6 @@ A full-stack web application built to manage various aspects of a residential so
 - 📢 **Notice Management**: Post and display notices in real-time using MongoDB.
 - 🛠️ **Complaint Ticketing System**: Members can raise complaints; coordinators can view and resolve them.
 - 💰 **Financial Management**: Basic ledger or tracking of maintenance payments.
-- 🧾 **QR-based Attendance (Optional)**: Generate and scan QR codes for events or daily attendance *(if implemented)*.
 - 📱 **Responsive UI**: Clean and modern interface using Tailwind CSS, optimized for all screen sizes.
 
 ## 🛠️ Tech Stack
