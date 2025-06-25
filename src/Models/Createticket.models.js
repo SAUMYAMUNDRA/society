@@ -31,10 +31,6 @@ const CreateticketSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    state:{
-        type:String,
-        default:"open",
-    },
     Status: {
     type: String,
     enum: ["Pending", "Resolved"],

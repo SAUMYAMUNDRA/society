@@ -221,6 +221,33 @@ router.get("/worker-dashboard", isWorker, async (req, res) => {
 });
 
 
+
+/* ----------------------------------------------
+   Route: worker ticket close
+*/
+
+router.post("/api/ticket/close/:id",isWorker, async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+
+    // Update ticket status to Closed
+    await Createticket.findByIdAndUpdate(ticketId, { Status: "Closed" });
+
+    console.log(`Ticket ${ticketId} marked as Closed ✅`);
+    res.redirect("/worker-dashboard");
+  } catch (err) {
+    console.error("Error closing ticket:", err);
+    res.status(500).send("Failed to close ticket");
+  }
+});
+
+
+
+
+
+
+
+
 router.post("/api/member/login", async (req, res) => {
   try {
     console.log("Received data:", req.body);
