@@ -7,7 +7,7 @@ A full-stack web application built to manage various aspects of a residential so
 - 🔐 **Role-Based Authentication**: Secure login/logout functionality for members and the secretary using session-based authentication.
 - 📢 **Notice Management**: Post and display notices in real-time using MongoDB.
 - 🛠️ **Complaint Ticketing System**: Members can raise complaints; coordinators can view and resolve them.
-- 💰 **Financial Management**: Basic ledger or tracking of maintenance payments.
+- 💰 **Financial Management**: Basic ledger or tracking of financial issues.
 - 📱 **Responsive UI**: Clean and modern interface using Tailwind CSS, optimized for all screen sizes.
 
 ## 🛠️ Tech Stack
