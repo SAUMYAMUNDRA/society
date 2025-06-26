@@ -13,6 +13,7 @@ import { Createticket } from "./src/Models/Createticket.models.js";
 import { User } from './src/Models/User.models.js'
 import { MaintenanceBills } from "./src/Models/Maintenancebills.models.js";
 import { error } from "console";
+import { AsyncLocalStorage } from "async_hooks";
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
@@ -136,6 +137,12 @@ app.get("/addmember", isLoggedIn, isSecretary, (req, res) => {
 
 
 
+
+
+
+
+
+
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -198,5 +205,80 @@ app.get('/society', async (req, res) => {
     res.status(500).send("internal server error");
   }
 });
+
+
+app.post("/fms/pay/:billid",isLoggedIn,async(req,res)=>{
+  try {
+      const billId=req.params.billid;
+      await MaintenanceBills.findByIdAndUpdate(billId,{
+        status:"Paid",
+        paymentDate:new Date(),
+        transactionId:"TXN"+Date.now(),
+      })
+      console.log("sucessfuly payed payment");
+      res.redirect("/fms/mybills");
+      res.redirect()
+  } catch (error) {
+      console.error("error updateing status of payment",error);
+      res.status(500).send("failed to update payment status of user",req.session.userid);
+      
+  }
+})
+
+
+app.get("/fms/allbills",isLoggedIn,isSecretary,async(req,res)=>{
+  try {
+      const bills = await MaintenanceBills.find()
+      .populate("userId", "name flatNo")
+      .sort({ dueDate: -1 });
+
+    res.render("allbills", { bills });
+  } catch (error) {
+      console.error("error fetching all bills for secretary",error);
+      res.status(500).send("error fetching all bills for secretary");
+      
+  }
+})
+
+
+
+app.get("/fms/mybills", isLoggedIn, async (req, res) => {
+  try {
+    const bills = await MaintenanceBills
+      .find({ userId: req.session.userid })
+      .sort({ dueDate: -1 });
+
+    res.render("mybills", { bills });
+  } catch (err) {
+    console.error("Error fetching user's bills:", err);
+    res.status(500).send("Failed to load bills");
+  }
+});
+
+
+
+
+
+
+app.get("/fms/user/:userId/bills", isLoggedIn,isSecretary, async (req, res) => {
+  try {
+    const {userId}=req.params;
+    const bills = await MaintenanceBills
+      .find({ userId })
+      .sort({ dueDate: -1 });
+      const user=await User.findById(userId);
+     res.render("user_bills", { bills, user });
+  } catch (err) {
+    console.error("Error fetching user bills:", err);
+    res.status(500).send("Error fetching user bills");
+  }
+});
+
+
+
+
+
+
+
 
 connectDB();
