@@ -6,7 +6,6 @@
   <title>Professional Responsive Grid</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Custom scrollbar for a cleaner look */
     body::-webkit-scrollbar {
       width: 8px;
     }
@@ -14,11 +13,11 @@
       background: #f1f1f1;
     }
     body::-webkit-scrollbar-thumb {
-      background: #4a5568; /* Darker gray for professional feel */
+      background: #4a5568;
       border-radius: 4px;
     }
     body::-webkit-scrollbar-thumb:hover {
-      background: #2d3748; /* Even darker gray on hover */
+      background: #2d3748;
     }
   </style>
 </head>
@@ -27,6 +26,7 @@
   <div class="grid gap-4 w-full max-w-7xl min-h-screen p-4 rounded-2xl shadow-2xl bg-white
               grid-cols-1 md:grid-cols-4 lg:grid-cols-4">
 
+    <!-- Header -->
     <div class="bg-gradient-to-r from-blue-700 to-blue-900 md:row-span-1 md:col-span-4 col-span-12
                 p-4 text-white font-extrabold shadow-lg rounded-xl
                 flex items-center justify-between relative z-10">
@@ -42,6 +42,7 @@
         </div>
     </div>
 
+    <!-- Notices -->
     <div class="bg-white md:row-span-9 sm:row-span-10 md:col-span-3 col-span-12
                 border-2 border-gray-200 text-center font-bold shadow-lg rounded-xl
                 flex flex-col md:flex-row overflow-hidden">
@@ -59,14 +60,11 @@
                 <li><a href="#" class="text-blue-600 hover:underline">Member directory update</a></li>
                 <li><a href="#" class="text-blue-600 hover:underline">New policy on data privacy</a></li>
                 <li><a href="#" class="text-blue-600 hover:underline">Financial report Q1 2024</a></li>
-                <li><a href="#" class="text-blue-600 hover:underline">Minutes of last executive meeting</a></li>
-                <li><a href="#" class="text-blue-600 hover:underline">Member directory update</a></li>
-                <li><a href="#" class="text-blue-600 hover:underline">New policy on data privacy</a></li>
-                <li><a href="#" class="text-blue-600 hover:underline">Financial report Q1 2024</a></li>
             </ul>
         </div>
     </div>
 
+    <!-- Events -->
     <div class="bg-gradient-to-br from-blue-500 to-blue-600 col-span-12 md:col-span-1 md:row-span-9
                 p-6 text-white font-extrabold shadow-lg rounded-xl
                 flex flex-col items-center justify-center text-center">
@@ -75,22 +73,37 @@
         <p class="mt-2 text-blue-100 text-sm">Upcoming activities & deadlines.</p>
     </div>
 
+    <!-- ✅ MANAGEMENT SYSTEM with hover -->
     <div class="bg-gradient-to-r from-slate-600 to-slate-800 col-span-12 md:col-span-2 md:row-span-2
                 p-4 text-white font-extrabold shadow-lg rounded-xl
-                flex flex-col items-center justify-center">
+                flex flex-col items-center justify-center relative group overflow-hidden transition-transform duration-300 hover:-translate-y-1">
         <div class="text-3xl mb-2">⚙️</div>
         <div class="text-xl tracking-wide">MANAGEMENT SYSTEM</div>
         <p class="mt-1 text-slate-100 text-sm">Efficient operations, streamlined processes.</p>
+
+        <!-- Hover effect -->
+        <div class="absolute inset-0 bg-slate-800 bg-opacity-90 flex flex-col items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <a href="/rms" class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">RMS</a>
+            <a href="/fms" class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">FMS</a>
+        </div>
     </div>
 
-    <div class="bg-gradient-to-r from-gray-500 to-gray-700 col-span-12 md:col-span-2 md:row-span-2
-                p-4 text-white font-extrabold shadow-lg rounded-xl
-                flex flex-col items-center justify-center">
-        <div class="text-3xl mb-2">📞</div>
-        <div class="text-xl tracking-wide">AUTHORITY CONTACT</div>
-        <p class="mt-1 text-gray-100 text-sm">Direct lines for urgent queries.</p>
-    </div>
+    <!-- ✅ AUTHORITY CONTACT with secretary info on hover -->
+  <div class="bg-gradient-to-r from-gray-500 to-gray-700 col-span-12 md:col-span-2 md:row-span-2
+            p-4 text-white font-extrabold shadow-lg rounded-xl
+            flex flex-col items-center justify-center relative group overflow-hidden transition-transform duration-300 hover:-translate-y-1">
+  <div class="text-3xl mb-2">📞</div>
+  <div class="text-xl tracking-wide">AUTHORITY CONTACT</div>
+  <p class="mt-1 text-gray-100 text-sm">Direct lines for urgent queries.</p>
+
+  <!-- Hover Reveal -->
+  <div class="absolute inset-0 bg-gray-800 bg-opacity-90 flex flex-col items-center justify-center gap-3 text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+    <div class="text-white font-bold text-lg">Secretary</div>
+    <p><strong>Name:</strong> <%= worker.secretaryName %></p>
+    <p><strong>Phone:</strong> <%= worker.secretaryPhone %></p>
   </div>
+</div>
 
+  </div>
 </body>
 </html>

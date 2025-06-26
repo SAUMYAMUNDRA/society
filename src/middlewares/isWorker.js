@@ -1,9 +1,10 @@
-import {User} from'../Models/User.models.js'
+import { User } from "../Models/User.models.js";
 
 export default async function isWorker(req, res, next) {
   try {
-    if (!req.session.userid) {
-      return res.redirect("/login"); // Not logged in
+    // Check both session.userid and session.role
+    if (!req.session.userid || req.session.role !== "worker") {
+      return res.redirect("/login");
     }
 
     const user = await User.findById(req.session.userid);
@@ -12,7 +13,7 @@ export default async function isWorker(req, res, next) {
       return res.status(403).send("Unauthorized: Only workers allowed");
     }
 
-    req.user = user; // pass user to next middleware/handler
+    req.user = user; // Attach user to request
     next();
   } catch (err) {
     console.error("isWorker error:", err);

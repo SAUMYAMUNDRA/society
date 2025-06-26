@@ -95,6 +95,7 @@ router.post("/api/secretary/login", async (req, res) => {
 
     // ✅ Store session
     req.session.idr=user._id;
+    req.session.role = "secretary";
     req.session.pass = password;
     console.log("Session created:", req.session);
 
@@ -272,6 +273,7 @@ router.post("/api/member/login", async (req, res) => {
       
        
         req.session.userid=user._id;
+        req.session.role = user.role;
          console.log("✅ Session set:", req.session);
     }
     

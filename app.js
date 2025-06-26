@@ -5,11 +5,14 @@ import { fileURLToPath } from "url";
 import secretaryRouter from "./src/routers/secretary.routers.js";
 import { connectDB } from "../society/src/Databases/db.js";
 import session from "express-session";
-import { Secretary } from "./src/Models/Seceratary.models.js"; 
+import { Secretary } from "./src/Models/Seceratary.models.js";
 import { isLoggedIn } from "./src/middlewares/isLLoggedIn.js";
 import isSecretary from './src/middlewares/isSecretary.auth.js';
 import { Notice } from "./src/Models/Notice.models.js";
 import { Createticket } from "./src/Models/Createticket.models.js";
+import { User } from './src/Models/User.models.js'
+import { MaintenanceBills } from "./src/Models/Maintenancebills.models.js";
+import { error } from "console";
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
@@ -67,9 +70,9 @@ app.get("/rmshome", isLoggedIn, (req, res) => {
 app.get("/api/tickets", isLoggedIn, async (req, res) => {
   try {
     const tickets = await Createticket
-      .find({ Userid: req.session.userid })     
+      .find({ Userid: req.session.userid })
       .sort({ _id: -1 })
-      .populate("Userid", "flatNo");    
+      .populate("Userid", "flatNo");
 
     console.log("Fetched tickets:", tickets);
     res.json(tickets);
@@ -79,15 +82,37 @@ app.get("/api/tickets", isLoggedIn, async (req, res) => {
   }
 });
 
+app.post("/fms/generate-bills", isLoggedIn, isSecretary, async (req, res) => {
+  try {
+    const { month, amount, dueDate } = req.body;
+    const allUsers = await User.find();
 
+    const billPromises = allUsers.map(user =>
+      MaintenanceBills.create({
+        userId: user._id,
+        month,
+        amount,
+        dueDate
+      })
+    )
+    await Promise.all(billPromises);
+    res.send("✅ Bills generated successfully for all members.");
+  } catch (err) {
+    console.log("error generating bills for all users");
+    res.status(500).send("❌ Failed to generate bills.");
 
+  }
+})
 
-
+app.get("/fms/generate", isLoggedIn, isSecretary, (req, res) => {
+  res.sendFile(path.join(__dirname, "pages", "generate_bills_page.html"));
+})
 
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "landing_page.html"));
 });
+
 
 app.get("/seclogin", (req, res) => {
   if (req.session.idr) {
@@ -97,6 +122,7 @@ app.get("/seclogin", (req, res) => {
 });
 
 
+
 app.get("/login", (req, res) => {
   if (req.session.idr) {
     return res.redirect("/society");
@@ -104,7 +130,7 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "memberlogin_page.html"));
 });
 
-app.get("/addmember", isLoggedIn, isSecretary,(req, res) => {
+app.get("/addmember", isLoggedIn, isSecretary, (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "addmembers_page.html"));
 });
 
@@ -152,11 +178,25 @@ app.listen(PORT, () => {
 });
 
 app.get('/society', async (req, res) => {
-  console.log(req.session.idr);
+  try {
+   const userId=req.session.userid || req.session.idr;
+   if(!userId) return res.redirect('/login');
+     const user = await User.findById(userId) || await Secretary.findById(userId);
+    if (!user) return res.redirect('/login');
+    const secretaryId=user.secretaryId || user._id;
+    const notices = await Notice.find({ secretaryId });
+    const secretary = await Secretary.findById(secretaryId);
   
-  const notices = await Notice.find({"secretaryId":req.session.idr}); // Replace with your DB fetch logic
-  res.render('society', { notices });
+
+    res.render('society', {
+      notices,
+      secretaryName: secretary?.name || "NA",
+      secretaryPhone: secretary?.phone || "NA"
+    });
+  } catch (err) {
+    console.error("error loading society page", err);
+    res.status(500).send("internal server error");
+  }
 });
 
-// Connect to MongoDB
 connectDB();
