@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6">
+    <h2 class="text-2xl font-bold mb-4 text-center text-blue-800">🧾 Payment History</h2>
+
+    <% if (bills.length === 0) { %>
+      <p class="text-gray-600 text-center">No payment records found.</p>
+    <% } else { %>
+      <table class="w-full table-auto border border-gray-300">
+        <thead>
+          <tr class="bg-blue-200 text-blue-900">
+            <th class="p-2 border">Month</th>
+            <th class="p-2 border">Amount</th>
+            <th class="p-2 border">Status</th>
+            <th class="p-2 border">Payment Date</th>
+            <th class="p-2 border">Transaction ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% bills.forEach(bill => { %>
+            <tr class="text-center hover:bg-gray-100">
+              <td class="p-2 border"><%= bill.month %></td>
+              <td class="p-2 border">₹<%= bill.amount %></td>
+              <td class="p-2 border"><%= bill.status %></td>
+              <td class="p-2 border"><%= bill.paymentDate ? bill.paymentDate.toDateString() : "—" %></td>
+              <td class="p-2 border"><%= bill.transactionId || "—" %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+
+    <div class="mt-6 text-center">
+      <a href="/society" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>

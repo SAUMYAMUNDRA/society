@@ -6,13 +6,14 @@ import secretaryRouter from "./src/routers/secretary.routers.js";
 import { connectDB } from "../society/src/Databases/db.js";
 import session from "express-session";
 import { Secretary } from "./src/Models/Seceratary.models.js";
+import { Fine } from  "../society/src/Models/Fine.models.js"
 import { isLoggedIn } from "./src/middlewares/isLLoggedIn.js";
 import isSecretary from './src/middlewares/isSecretary.auth.js';
 import { Notice } from "./src/Models/Notice.models.js";
 import { Createticket } from "./src/Models/Createticket.models.js";
 import { User } from './src/Models/User.models.js'
 import { MaintenanceBills } from "./src/Models/Maintenancebills.models.js";
-import { error } from "console";
+import { error, log } from "console";
 import { AsyncLocalStorage } from "async_hooks";
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -135,6 +136,64 @@ app.get("/addmember", isLoggedIn, isSecretary, (req, res) => {
   res.sendFile(path.join(__dirname, "pages", "addmembers_page.html"));
 });
 
+app.get("/fms",isLoggedIn,(req,res)=>{
+  res.render('fms_dashboard');
+})
+
+app.get("/fms/fines", isLoggedIn, (req, res) => {
+  res.send("<h1 style='font-family:sans-serif;text-align:center;margin-top:50px;'>⚠️ Fines system coming soon!</h1>");
+});
+
+
+
+
+
+
+app.get('/fms/history',isLoggedIn,async (req,res)=>{
+  try {
+      const userId=req.session.userid;
+      const bills= await MaintenanceBills.find({userId}).sort({dueDate:-1});
+      res.render("payment_history",{bills});
+  } catch (error) {
+    console.error("error getting bills histroy");
+    res.send(500).status("error getting bills histroy");
+  }
+})
+
+
+
+
+
+app.get('/fms/fine/generate',isSecretary,isLoggedIn,async (req,res)=>{
+  try {
+      const users=await User.find({role:"member"});
+      res.render("generate_fine",{users});
+  } catch (error) {
+      console.error("error generating fines",error);
+      res.status(500).send("error generating fines");
+      
+  }
+})
+
+
+
+app.post('/fms/fine/generate', isLoggedIn, isSecretary, async (req, res) => {
+  try {
+    const { userId, amount, reason } = req.body;
+
+    await Fine.create({
+      userId,
+      amount,
+      reason,
+      status: "Pending"
+    });
+
+    res.send("✅ Fine issued successfully.");
+  } catch (err) {
+    console.error("Error issuing fine:", err);
+    res.status(500).send("❌ Failed to issue fine.");
+  }
+});
 
 
 
@@ -186,20 +245,33 @@ app.listen(PORT, () => {
 
 app.get('/society', async (req, res) => {
   try {
-   const userId=req.session.userid || req.session.idr;
-   if(!userId) return res.redirect('/login');
-     const user = await User.findById(userId) || await Secretary.findById(userId);
+    const userId = req.session.userid || req.session.idr;
+    if (!userId) return res.redirect('/login');
+
+    const user = await User.findById(userId) || await Secretary.findById(userId);
     if (!user) return res.redirect('/login');
-    const secretaryId=user.secretaryId || user._id;
+
+    const secretaryId = user.secretaryId || user._id;
     const notices = await Notice.find({ secretaryId });
     const secretary = await Secretary.findById(secretaryId);
-  
 
+    // 👇 Define pendingBillCount
+    let pendingBillCount = 0;
+    if (user.role === "member") {
+      pendingBillCount = await MaintenanceBills.countDocuments({
+        userId,
+        status: { $ne: "Paid" }
+      });
+    }
+
+    // ✅ Single final res.render call with all data
     res.render('society', {
       notices,
       secretaryName: secretary?.name || "NA",
-      secretaryPhone: secretary?.phone || "NA"
+      secretaryPhone: secretary?.phone || "NA",
+      pendingBillCount
     });
+
   } catch (err) {
     console.error("error loading society page", err);
     res.status(500).send("internal server error");
@@ -207,23 +279,27 @@ app.get('/society', async (req, res) => {
 });
 
 
-app.post("/fms/pay/:billid",isLoggedIn,async(req,res)=>{
+app.post("/fms/pay/:billid", isLoggedIn, async (req, res) => {
   try {
-      const billId=req.params.billid;
-      await MaintenanceBills.findByIdAndUpdate(billId,{
-        status:"Paid",
-        paymentDate:new Date(),
-        transactionId:"TXN"+Date.now(),
-      })
-      console.log("sucessfuly payed payment");
-      res.redirect("/fms/mybills");
-      res.redirect()
+    const billId = req.params.billid;
+
+    await MaintenanceBills.findByIdAndUpdate(billId, {
+      status: "Paid",
+      paymentDate: new Date(),
+      transactionId: "TXN" + Date.now(),
+    });
+
+    console.log("✅ Successfully paid payment");
+    return res.redirect("/fms/mybills"); // ✅ Only one response, with return
   } catch (error) {
-      console.error("error updateing status of payment",error);
-      res.status(500).send("failed to update payment status of user",req.session.userid);
-      
+    console.error("❌ Error updating status of payment:", error);
+
+    // ✅ Safe fallback if response hasn't already been sent
+    if (!res.headersSent) {
+      return res.status(500).send("Failed to update payment status for user: " + req.session.userid);
+    }
   }
-})
+});
 
 
 app.get("/fms/allbills",isLoggedIn,isSecretary,async(req,res)=>{
