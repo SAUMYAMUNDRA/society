@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Fines</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
+
+  <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-4 text-center text-gray-800">All Fines Issued</h2>
+
+    <table class="table-auto w-full border border-gray-300">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="px-4 py-2 border">#</th>
+          <th class="px-4 py-2 border">Member Name</th>
+          <th class="px-4 py-2 border">Flat No</th>
+          <th class="px-4 py-2 border">Reason</th>
+          <th class="px-4 py-2 border">Amount</th>
+          <th class="px-4 py-2 border">Status</th>
+          <th class="px-4 py-2 border">Issued On</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% fines.forEach((fine, index) => { %>
+          <tr class="text-center">
+            <td class="px-4 py-2 border"><%= index + 1 %></td>
+            <td class="px-4 py-2 border"><%= fine.userId.name %></td>
+            <td class="px-4 py-2 border"><%= fine.userId.flatNo %></td>
+            <td class="px-4 py-2 border"><%= fine.reason %></td>
+            <td class="px-4 py-2 border">₹<%= fine.amount %></td>
+            <td class="px-4 py-2 border">
+              <span class="<%= fine.status === 'Paid' ? 'text-green-600' : 'text-red-600' %>">
+                <%= fine.status %>
+              </span>
+            </td>
+            <td class="px-4 py-2 border"><%= fine.issuedDate.toDateString() %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div class="mt-6 text-center">
+      <a href="/society" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
+        🔙 Back to Society
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -197,7 +197,68 @@ app.post('/fms/fine/generate', isLoggedIn, isSecretary, async (req, res) => {
 
 
 
+app.get('/fms/fine/all',isLoggedIn,isSecretary,async (req,res)=>{
+  try {
+      const fines=await Fine.find().populate('userId','name flatNo').sort({issueDate:-1});
+      res.render('all_fines',{fines});
+  } catch (error) {
+      console.error("error shpwing all fines of all users",error);
+      res.status(500).send("error shpwing all fines of all users");
+      
+  }
+})
 
+app.post('/fms/fines/pay/:fineId', isLoggedIn, async (req, res) => {
+  try {
+    const fineId = req.params.fineId;
+
+    await Fine.findByIdAndUpdate(fineId, {
+      status: "Paid",
+      paymentDate: new Date(),
+      transactionId: "TXN" + Date.now()
+    });
+
+    res.redirect('/fms/fines');
+  } catch (err) {
+    console.error("Error paying fine:", err);
+    res.status(500).send("❌ Failed to pay fine.");
+  }
+});
+
+
+app.get('/fms/fines', isLoggedIn, async (req, res) => {
+  try {
+    const userId = req.session.userid;
+
+    const fines = await Fine.find({ userId, status: "Pending" }).sort({ issuedDate: -1 });
+
+    res.render("my_fines", { fines });
+  } catch (err) {
+    console.error("Error loading user's fines:", err);
+    res.status(500).send("Failed to load fines");
+  }
+});
+
+
+
+
+app.post("/fms/fines/pay/:fineId", isLoggedIn, async (req, res) => {
+  try {
+    const fineId = req.params.fineId;
+
+    await Fine.findByIdAndUpdate(fineId, {
+      status: "Paid",
+      paymentDate: new Date(),
+      transactionId: "TXN" + Date.now(),
+    });
+
+    console.log("✅ Fine paid successfully");
+    res.redirect("/fms/fines");
+  } catch (error) {
+    console.error("❌ Error updating fine status:", error);
+    res.status(500).send("Failed to update fine status.");
+  }
+});
 
 
 
@@ -254,7 +315,7 @@ app.get('/society', async (req, res) => {
     const secretaryId = user.secretaryId || user._id;
     const notices = await Notice.find({ secretaryId });
     const secretary = await Secretary.findById(secretaryId);
-
+    const fines = await Fine.find({ userId, status: "Pending" }).sort({ issuedDate: -1 });
     // 👇 Define pendingBillCount
     let pendingBillCount = 0;
     if (user.role === "member") {
@@ -266,11 +327,12 @@ app.get('/society', async (req, res) => {
 
     // ✅ Single final res.render call with all data
     res.render('society', {
-      notices,
-      secretaryName: secretary?.name || "NA",
-      secretaryPhone: secretary?.phone || "NA",
-      pendingBillCount
-    });
+  notices,
+  secretaryName: secretary?.name || "NA",
+  secretaryPhone: secretary?.phone || "NA",
+  pendingBillCount,
+  fines
+});
 
   } catch (err) {
     console.error("error loading society page", err);

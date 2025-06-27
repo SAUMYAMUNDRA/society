@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Fines</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans p-6">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">My Pending Fines</h1>
+
+    <% if (fines.length === 0) { %>
+      <p class="text-gray-600">You have no pending fines 🎉</p>
+    <% } else { %>
+      <table class="min-w-full table-auto text-left border border-gray-300">
+        <thead>
+          <tr class="bg-gray-200 text-gray-700">
+            <th class="px-4 py-2">Reason</th>
+            <th class="px-4 py-2">Amount</th>
+            <th class="px-4 py-2">Issued Date</th>
+            <th class="px-4 py-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% fines.forEach(fine => { %>
+            <tr class="border-t">
+              <td class="px-4 py-2"><%= fine.reason %></td>
+              <td class="px-4 py-2">₹<%= fine.amount %></td>
+              <td class="px-4 py-2"><%= new Date(fine.issuedDate).toLocaleDateString() %></td>
+              <td class="px-4 py-2">
+                <form action="/fms/fines/pay/<%= fine._id %>" method="POST">
+                  <button class="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition">Pay</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+
+    <div class="mt-6">
+      <a href="/society" class="text-blue-600 hover:underline">← Back to Society Page</a>
+    </div>
+  </div>
+</body>
+</html>

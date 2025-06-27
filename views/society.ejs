@@ -43,21 +43,20 @@
         <!-- Private Notices -->
         <div class="w-full md:w-1/4 p-6 text-left flex flex-col justify-start">
             <h3 class="text-xl md:text-2xl font-extrabold mb-4 text-gray-700">Private Notices</h3>
-            <ul class="list-disc list-inside text-gray-700 space-y-2 flex-grow overflow-y-auto custom-scrollbar pr-2">
-                <li><a href="#" class="text-blue-600 hover:underline">Minutes of last executive meeting</a></li>
-                <li><a href="#" class="text-blue-600 hover:underline">Member directory update</a></li>
-                <li><a href="#" class="text-blue-600 hover:underline">New policy on data privacy</a></li>
-                <li><a href="#" class="text-blue-600 hover:underline">Financial report Q1 2024</a></li>
+          <ul class="list-disc list-inside text-gray-700 space-y-2 flex-grow overflow-y-auto custom-scrollbar pr-2">
+  <% if (fines && fines.length > 0) { %>
+    <% fines.forEach(fine => { %>
+      <li>
+        <span class="text-red-600 font-semibold">Fine:</span>
+        <%= fine.reason %> - ₹<%= fine.amount %>
+        <a href="/fms/fines" class="ml-2 text-blue-600 hover:underline text-sm">(Pay Fine)</a>
+      </li>
+    <% }) %>
+  <% } else { %>
+    <li class="text-green-700">No pending fines 🎉</li>
+  <% } %>
+</ul>
 
-                <% if (typeof pendingBillCount !== 'undefined' && pendingBillCount > 0) { %>
-                <li class="mt-4 text-red-600 font-bold">
-                  You have <%= pendingBillCount %> pending bill(s)!
-                  <a href="/fms/mybills" class="inline-block mt-1 text-sm text-blue-700 underline hover:text-blue-900 ml-2">
-                    Click here to pay
-                  </a>
-                </li>
-                <% } %>
-            </ul>
         </div>
     </div>
 
