@@ -1,104 +1,61 @@
+
 import express from "express";
 import { Secretary } from "../Models/Seceratary.models.js";
 import { isLoggedIn } from "../middlewares/isLLoggedIn.js";
 import { User } from "../Models/User.models.js";
 import { Notice } from "../Models/Notice.models.js";
 import isSecretary from "../middlewares/isSecretary.auth.js";
-import {Createticket} from '../Models/Createticket.models.js'
+import { Createticket } from '../Models/Createticket.models.js';
+import isWorker from "../middlewares/isWorker.js";
+import { MaintenanceBills } from "../Models/Maintenancebills.models.js";
+import { Event } from "../Models/Event.models.js";
+import { EventRegistration } from "../Models/EventRegistration.models.js";
+import { name } from "ejs";
+
 const router = express.Router();
 
-/* ----------------------------------------------
-   Route: Register Secretary
-   Endpoint: POST /api/secretary
------------------------------------------------- */
+// ----------------------------------------------
+// 🔐 Secretary Registration & Login Routes
+// ----------------------------------------------
+
 router.post("/api/secretary", async (req, res) => {
   try {
-    console.log("Received data:", req.body);
-
     const {
-      name,
-      email,
-      phone,
-      dob,
-      societyName,
-      societyAddress,
-      password,
-      cpass,
-      fullAddress,
+      name, email, phone, dob,
+      societyName, societyAddress,
+      password, cpass, fullAddress
     } = req.body;
 
-    // Validate required fields
-    if (
-      !name ||
-      !email ||
-      !phone ||
-      !dob ||
-      !societyName ||
-      !societyAddress ||
-      !password ||
-      !cpass ||
-      !fullAddress
-    ) {
-      console.log("Missing required fields");
+    if (!name || !email || !phone || !dob || !societyName || !societyAddress || !password || !cpass || !fullAddress) {
       return res.status(400).json({ error: "All fields are required." });
     }
+
     const user = await Secretary.findOne({ email });
-    if (user) {
-      return res.status(500).json({ error: "user already exists with same email" });
-    }
-    // Save to database
-    const newEntry = new Secretary({
-      name,
-      email,
-      phone,
-      dob,
-      societyName,
-      societyAddress,
-      password,
-      cpass,
-      fullAddress,
-    });
+    if (user) return res.status(500).json({ error: "User already exists." });
 
-    console.log("Saving data to DB");
-    await newEntry.save();
+    await new Secretary({
+      name, email, phone, dob, societyName,
+      societyAddress, password, cpass, fullAddress
+    }).save();
 
-    res.status(201).json({ message: "Secretary data saved successfully" });
+    res.status(201).json({ message: "Secretary registered successfully" });
   } catch (error) {
-    console.error("Error saving data:", error);
+    console.error("Error saving secretary:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-/* ----------------------------------------------
-   Route: Secretary Login
-   Endpoint: POST /api/secretary/login
------------------------------------------------- */
 router.post("/api/secretary/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: "Email and password are required" });
 
-    // Validate fields
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Email and password are required" });
-    }
-
-    // Find user in DB
     const user = await Secretary.findOne({ email });
+    if (!user || user.password !== password) return res.status(401).json({ error: "Invalid email or password" });
 
-    // Check user and password
-    if (!user || user.password !== password) {
-      console.log("Invalid email or password");
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    // ✅ Store session
-    req.session.idr=user._id;
+    req.session.idr = user._id;
     req.session.role = "secretary";
     req.session.pass = password;
-    console.log("Session created:", req.session);
-
     res.status(200).json({ message: "Login successful", email });
   } catch (error) {
     console.error("Login error:", error);
@@ -106,115 +63,59 @@ router.post("/api/secretary/login", async (req, res) => {
   }
 });
 
-router.get("/dashboard", isLoggedIn, function (req, res) {
-  res.render("dashboard", { user: req.user })
-})
-
-
-/* ----------------------------------------------
-   Route: seceratory is registyring new member
-   Endpoint: POST /api/addmember
-*/
-
-router.post("/api/addmember",isSecretary, async (req, res) => {
-  try {
-    console.log("Received data:", req.body);
-
-    const {
-      phone,
-      flatNo,
-      role
-    } = req.body;
-    const secretary = await Secretary.findOne({ _id: req.session.idr });
-    const id = secretary._id;
-    // Validate required fields
-    if (
-      !phone || !flatNo
-    ) {
-      console.log("Missing required fields");
-      return res.status(400).json({ error: "All fields are required." });
-    }
-    const user = await User.findOne({ phone });
-    if (user) {
-      return res.status(500).json({ error: "user already exists with same phone no in your society" });
-    }
-    // Save to database
-   const newEntry = new User({
-  phone,
-  flatNo,
-  secretaryId: id,
-  role:role || "member"
+router.get("/dashboard", isLoggedIn, (req, res) => {
+  res.render("dashboard", { user: req.user });
 });
 
-    console.log("Saving data to DB");
-    await newEntry.save();
+// ----------------------------------------------
+// 👤 Member Management
+// ----------------------------------------------
 
-   res.redirect('/addmember');
+router.post("/api/addmember", isSecretary, async (req, res) => {
+  try {
+    const { phone, flatNo, role } = req.body;
+    if (!phone || !flatNo) return res.status(400).json({ error: "All fields are required." });
+
+    const existing = await User.findOne({ phone });
+    if (existing) return res.status(500).json({ error: "User already exists with same phone" });
+
+    const secId = req.session.idr;
+    await new User({ phone, flatNo, secretaryId: secId, role: role || "member" }).save();
+
+    res.redirect('/addmember');
   } catch (error) {
-    console.error("Error saving data:", error);
+    console.error("Error adding member:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
 
+// ----------------------------------------------
+// 📢 Notice Publishing
+// ----------------------------------------------
 
-
-/* ----------------------------------------------
-   Route: seceratory is publishing notice
-   Endpoint: POST /api/notice
-*/
-
-
-router.post("/api/notice",isSecretary, async (req, res) => {
+router.post("/api/notice", isSecretary, async (req, res) => {
   try {
-    console.log("Received data:", req.body);
+    const { title, content } = req.body;
+    if (!title || !content) return res.status(400).json({ error: "All fields are required." });
 
-    const {
-      title,
-      content
-    } = req.body;
-    const secretary = await Secretary.findOne({ _id:req.session.idr});
-    const id = secretary._id;
-    
-    if (
-      !title || !content
-    ) {
-      console.log("Missing required fields");
-      return res.status(400).json({ error: "All fields are required." });
-    }
-    // Save to database
-   const newEntry = new Notice({
-  title,
-  content,
-  secretaryId: id
-});
+    const secId = req.session.idr;
+    await new Notice({ title, content, secretaryId: secId }).save();
 
-    console.log("Saving data to DB");
-    await newEntry.save();
-
-   res.redirect('/notice');
+    res.redirect('/notice');
   } catch (error) {
-    console.error("Error saving data:", error);
+    console.error("Error publishing notice:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-
-
-/* ----------------------------------------------
-   Route: worker dashboard route
-   Endpoint: POST /api/notice
-*/
-import isWorker from "../middlewares/isWorker.js"; // ⬅️ make sure this import is correct
-import { MaintenanceBills } from "../Models/Maintenancebills.models.js";
+// ----------------------------------------------
+// 🛠️ Worker Routes
+// ----------------------------------------------
 
 router.get("/worker-dashboard", isWorker, async (req, res) => {
   try {
-    const worker = req.user; // from middleware
-
-    const tickets = await Createticket.find({ Secid: worker.secretaryId })
-      .sort({ _id: -1 })
-      .populate("Userid", "flatNo");
-
+    const worker = req.user;
+    const tickets = await Createticket.find({ Secid: worker.secretaryId }).sort({ _id: -1 }).populate("Userid", "flatNo");
     res.render("worker_dashboard", { worker, tickets });
   } catch (err) {
     console.error("Worker dashboard error:", err);
@@ -222,20 +123,9 @@ router.get("/worker-dashboard", isWorker, async (req, res) => {
   }
 });
 
-
-
-/* ----------------------------------------------
-   Route: worker ticket close
-*/
-
-router.post("/api/ticket/close/:id",isWorker, async (req, res) => {
+router.post("/api/ticket/close/:id", isWorker, async (req, res) => {
   try {
-    const ticketId = req.params.id;
-
-    // Update ticket status to Closed
-    await Createticket.findByIdAndUpdate(ticketId, { Status: "Closed" });
-
-    console.log(`Ticket ${ticketId} marked as Closed ✅`);
+    await Createticket.findByIdAndUpdate(req.params.id, { Status: "Closed" });
     res.redirect("/worker-dashboard");
   } catch (err) {
     console.error("Error closing ticket:", err);
@@ -243,99 +133,38 @@ router.post("/api/ticket/close/:id",isWorker, async (req, res) => {
   }
 });
 
-
-
-
-
-
-/* ----------------------------------------------
-   Route: show member mybiils
-*/
-
-
-
-
-
+// ----------------------------------------------
+// 🧑‍💼 Member Login + Create Ticket
+// ----------------------------------------------
 
 router.post("/api/member/login", async (req, res) => {
   try {
-    console.log("Received data:", req.body);
+    const { PhoneNo, password } = req.body;
+    if (!PhoneNo || !password) return res.status(400).json({ error: "All fields are required." });
 
-    const {
-      PhoneNo,
-      password
-    } = req.body;
-
-    if (
-      !PhoneNo || !password
-    ) {
-      console.log("Missing required fields");
-      return res.status(400).json({ error: "All fields are required." });
+    const user = await User.findOne({ phone: PhoneNo });
+    if (user) {
+      req.session.userid = user._id;
+      req.session.role = user.role;
+      return res.redirect(user.role === "worker" ? "/worker-dashboard" : "/society");
     }
-
-    
-    
-    const user = await User.findOne({ "phone":  PhoneNo });
-    if(user){
-      console.log("adding to session");
-      
-       
-        req.session.userid=user._id;
-        req.session.role = user.role;
-         console.log("✅ Session set:", req.session);
-    }
-    
-
-
-   if (user.role === "worker") {
-  res.redirect("/worker-dashboard");
-} else {
-  res.redirect("/society");
-}
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-
-
-
-
 router.post("/api/rms/createticket", async (req, res) => {
   try {
-    const {
-      category,
-      date_available,
-      contact_no,
-      description,
-      
-    } = req.body;
-   
-    
+    const { category, date_available, contact_no, description } = req.body;
     const userId = req.session.userid;
-   
-    const user= await User.findOne({_id:userId})
-    
-    console.log("user:",user);
-    
-    
-   
-    
-    const secretary = await Secretary.findOne({ _id: user.secretaryId });
-     console.log("seceratary:",secretary);
-     
-    const id = secretary._id;
+    const user = await User.findById(userId);
+    const secretary = await Secretary.findById(user.secretaryId);
 
-    
-    const secId = id; 
-    const flatNo = user.flatNo; 
-    
-    
-    const ticket = new Createticket ({
+    const ticket = new Createticket({
       Userid: userId,
-      Secid: secId,
-      Flatno: flatNo,
+      Secid: secretary._id,
+      Flatno: user.flatNo,
       Category: category,
       Prefered_date_and_time: date_available,
       Conatctno: contact_no,
@@ -343,11 +172,138 @@ router.post("/api/rms/createticket", async (req, res) => {
       Status: "Pending"
     });
 
-  await ticket.save();
-console.log("query received");
-res.redirect('/showtickets_page.html');
+    await ticket.save();
+    res.redirect('/showtickets_page.html');
   } catch (error) {
     console.error("Error creating ticket:", error);
     res.status(500).send("Internal Server Error");
   }
-});export default router;
+});
+
+
+
+
+
+// ----------------------------------------------
+// 🛠️ Event Routes
+// ----------------------------------------------
+router.get('/event/create',isSecretary,(req,res)=>{
+  res.render('event_create')
+});
+
+
+router.post('/event/create',isSecretary,async (req,res)=>{
+  const { title, description, date, time, venue, organizer, capacity}=req.body;
+  try {
+        const newEvent=new Event({
+      title,
+      description,
+      date,
+      time,
+      venue,
+      organizer,
+      capacity: capacity ? Number(capacity) : undefined,
+      createdBy: req.session.secretaryId //check
+    });
+    await newEvent.save();
+    console.log("event created sucessfully");
+    res.redirect('/list');
+        
+  } catch (error) {
+      console.error("error creating event",error);
+      res.status(500).send('Error creating event');
+      
+  }
+})
+
+
+
+
+// ----------------------------------------------
+// 🛠️ Event Routes to show all tickets
+// ----------------------------------------------
+
+router.get('/list',isLoggedIn, async (req,res)=>{
+  try {
+      const events=await Event.find().sort({date:1});
+      const userId=req.session.userid;
+      const secretaryId=req.session.idr;
+      console.log(secretaryId);
+      res.render('event_list',{
+        events,
+        userId,
+         //check
+        secretaryId,//check
+      }) 
+        
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).send('Error fetching events');
+  }
+})
+
+
+
+
+
+// ----------------------------------------------
+// 🧑‍💼 Event registration and capacity check for member
+// ----------------------------------------------
+router.post('/register/:eventId',isLoggedIn,async (req,res)=>{
+  const eventId=req.params.eventId;
+  const user=req.session.userId;
+  try {
+        const event=await Event.findById(eventId);
+        if(!event){
+            console.log("event not found");
+            return res.status(404).send("event not found");
+        }
+        const already_registerd=await EventRegistration.findOne({eventId, user});;
+        if(already_registerd){
+          return res.send(`you have already reg for event ${event.title}`);
+        }
+        if(event.capacity){
+          const count=await EventRegistration.countDocuments({eventId});
+          if(count>=event.capacity){
+             return res.send('⚠️ Event is full. Registration closed.');
+          }
+        }
+        const newreg=new EventRegistration({eventId,user});
+        await newreg.save();
+        res.redirect('/event/list');
+  } catch (error) {
+      console.error("registration error",error);
+      res.status(500).send("registration error");
+      
+  }
+})
+
+
+// ----------------------------------------------
+// 🧑‍💼 show count of event memebers to sec
+// ----------------------------------------------
+router.get('/event/attendees/:eventId', isSecretary, async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).send('Event not found');
+
+    const registrations = await EventRegistration.find({ eventId }).populate('userId');
+    res.render('event_attendees', { event, registrations });
+
+  } catch (error) {
+    console.error("Error fetching list of attendees:", error);
+    res.status(500).send("Error fetching list of attendees");
+  }
+});
+
+
+
+
+
+
+
+
+export default router;
+
+

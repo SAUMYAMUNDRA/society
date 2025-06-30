@@ -1,0 +1,11 @@
+<h2>Create New Event</h2>
+<form method="POST" action="/event/create">
+  <input type="text" name="title" placeholder="Event Title" required />
+  <textarea name="description" placeholder="Description"></textarea>
+  <input type="date" name="date" required />
+  <input type="time" name="time" />
+  <input type="text" name="venue" placeholder="Venue" />
+  <input type="text" name="organizer" placeholder="Organizer" />
+  <input type="number" name="capacity" placeholder="Max Participants (optional)" />
+  <button type="submit">Create Event</button>
+</form>
