@@ -6,6 +6,7 @@ import { User } from "../Models/User.models.js";
 import { Notice } from "../Models/Notice.models.js";
 import isSecretary from "../middlewares/isSecretary.auth.js";
 import { Createticket } from '../Models/Createticket.models.js';
+import { LostFoundItem } from "../Models/LostFoundItem.models.js";
 import isWorker from "../middlewares/isWorker.js";
 import { MaintenanceBills } from "../Models/Maintenancebills.models.js";
 import { Event } from "../Models/Event.models.js";
@@ -296,9 +297,127 @@ router.get('/event/attendees/:eventId', isSecretary, async (req, res) => {
     res.status(500).send("Error fetching list of attendees");
   }
 });
+router.post('/event/register/:eventId', isLoggedIn, async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const userId = req.session.userid;
+
+    // Ensure only members can register
+    if (!userId || req.session.role !== "member") {
+      return res.status(403).send("Only members can register for events.");
+    }
+
+    // Find event
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).send("Event not found");
+
+    // Check if already registered
+    const alreadyRegistered = await EventRegistration.findOne({ eventId, user: userId });
+    if (alreadyRegistered) {
+      return res.send(`⚠️ You have already registered for "${event.title}".`);
+    }
+
+    // Check capacity
+    if (event.capacity) {
+      const count = await EventRegistration.countDocuments({ eventId });
+      if (count >= event.capacity) {
+        return res.send("⚠️ Event is full. Registration closed.");
+      }
+    }
+
+    // Register the user
+    const newReg = new EventRegistration({ eventId, user: userId });
+    await newReg.save();
+
+    // Get secretaryId from User model
+    const user = await User.findById(userId);
+    const secretaryId = user.secretaryId;
+
+    // Create Notice
+    await new Notice({
+      title: "Event Registration Successful",
+      content: `You have successfully registered for: ${event.title}`,
+      secretaryId
+    }).save();
+
+    console.log(`✅ Member ${userId} registered for event ${event.title}`);
+
+    // Redirect with query param to show success message
+    res.redirect("/list?registered=1");
+    
+  } catch (error) {
+    console.error("🚨 Registration error:", error);
+    res.status(500).send("Server error during event registration.");
+  }
+});
+
+// ----------------------------------------------
+// 📝 Lost and Found - Show Form Page
+// ----------------------------------------------
+
+router.get('/lnf/post', isLoggedIn, (req, res) => {
+  res.render('lnf_post'); // ✅ correct
+});
+
+
+// ----------------------------------------------
+// 📦 Lost and Found - POST Item
+// ----------------------------------------------
+router.post('/lnf/post', isLoggedIn, async (req, res) => {
+  try {
+    const { title, description, location, type, imageUrl } = req.body;
+
+    const newItem = new LostFoundItem({
+      title,
+      description,
+      location,
+      type,
+      imageUrl,
+      postedBy: req.session.userid,
+    });
+
+    await newItem.save();
+    res.redirect('/lnf'); // ✅ FIXED: Redirect to item list
+  } catch (err) {
+    console.error("Error posting lost/found item:", err);
+    res.status(500).send("Server Error");
+  }
+});
 
 
 
+// ----------------------------------------------
+// 📋 Lost and Found - View All Items
+// ----------------------------------------------
+
+
+router.get('/lnf',isLoggedIn,async (req,res)=>{
+  try {
+    const items=await LostFoundItem.find().sort({date:-1}).populate('postedBy', 'flatNo');
+    res.render('lnf_list',{items});
+  } catch (error) {
+     console.error("Error fetching lost/found items:", err);
+    res.status(500).send("Error loading lost and found board.");
+  }
+})
+
+
+
+
+// ----------------------------------------------
+// 📋 Update status if claimed
+// ----------------------------------------------
+
+router.post('/lnf/claim/:id',isLoggedIn,async (req,res)=>{
+  try {
+    const itemId=req.params.id;
+    await LostFoundItem.findByIdAndUpdate(itemId,{status:'Claimed'});
+    res.redirect('/lnf');
+  } catch (error) {
+   console.error("Error claiming item:", error);
+    res.status(500).send("Failed to mark item as claimed"); 
+  }
+})
 
 
 

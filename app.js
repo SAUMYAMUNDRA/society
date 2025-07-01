@@ -70,7 +70,13 @@ app.get('/society', async (req, res) => {
     if (!user) return res.redirect('/login');
 
     const secretaryId = user.secretaryId || user._id;
-    const notices = await Notice.find({ secretaryId });
+
+    // 🔔 Public notices for everyone in the society
+    const notices = await Notice.find({ secretaryId, userId: null });
+
+    // 🔒 Private notices only for this user
+    const privateNotices = await Notice.find({ userId }).sort({ createdAt: -1 });
+
     const secretary = await Secretary.findById(secretaryId);
     const fines = await Fine.find({ userId, status: "Pending" }).sort({ issuedDate: -1 });
 
@@ -80,7 +86,8 @@ app.get('/society', async (req, res) => {
     }
 
     res.render('society', {
-      notices,
+      notices,              // public
+      privateNotices,       // personal like event registration success
       secretaryName: secretary?.name || "NA",
       secretaryPhone: secretary?.phone || "NA",
       pendingBillCount,

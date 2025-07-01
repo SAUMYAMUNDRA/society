@@ -1,16 +1,23 @@
 import mongoose from "mongoose";
 
 const NoticeSchema = new mongoose.Schema({
-  secretaryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Secretary", 
+  title: {
+    type: String,
     required: true
-  },
-  title:{
-    type:String
   },
   content: {
     type: String,
+    required: true
+  },
+  secretaryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Secretary",
+    required: true
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", 
+    default: null
   }
 }, { timestamps: true });
 
