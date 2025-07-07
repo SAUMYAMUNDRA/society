@@ -276,6 +276,7 @@ app.get("/dashboard", async (req, res) => {
 
 app.use(secretaryRouter);
 
+
 // --------------------------------------------
 // 🔹 DB Connect and Start Server
 // --------------------------------------------

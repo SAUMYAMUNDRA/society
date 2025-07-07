@@ -2,6 +2,7 @@
 import express from "express";
 import { Secretary } from "../Models/Seceratary.models.js";
 import { isLoggedIn } from "../middlewares/isLLoggedIn.js";
+import bcrypt from 'bcrypt';
 import { User } from "../Models/User.models.js";
 import { Notice } from "../Models/Notice.models.js";
 import isSecretary from "../middlewares/isSecretary.auth.js";
@@ -74,15 +75,36 @@ router.get("/dashboard", isLoggedIn, (req, res) => {
 
 router.post("/api/addmember", isSecretary, async (req, res) => {
   try {
-    const { phone, flatNo, role } = req.body;
-    if (!phone || !flatNo) return res.status(400).json({ error: "All fields are required." });
+    const {
+       name,
+      age,
+      email,
+      phone,
+      dob,
+      address,
+      flatNo,
+      role
+     } = req.body;
+ if (!name || !email || !phone || !flatNo ) {
+      return res.status(400).json({ error: "Missing required fields." });
+    }
 
-    const existing = await User.findOne({ phone });
-    if (existing) return res.status(500).json({ error: "User already exists with same phone" });
-
-    const secId = req.session.idr;
-    await new User({ phone, flatNo, secretaryId: secId, role: role || "member" }).save();
-
+     const existing = await User.findOne({ phone });
+    if (existing) {
+      return res.status(409).json({ error: "User already exists with same phone." });
+    }
+     const newUser = new User({
+      name,
+      age,
+      email,
+      phone,
+      dob,
+      address,
+      flatNo,
+      secretaryId: req.session.idr,
+      role: role || "member"
+    });
+    await newUser.save();
     res.redirect('/addmember');
   } catch (error) {
     console.error("Error adding member:", error);
@@ -144,16 +166,61 @@ router.post("/api/member/login", async (req, res) => {
     if (!PhoneNo || !password) return res.status(400).json({ error: "All fields are required." });
 
     const user = await User.findOne({ phone: PhoneNo });
-    if (user) {
-      req.session.userid = user._id;
-      req.session.role = user.role;
-      return res.redirect(user.role === "worker" ? "/worker-dashboard" : "/society");
+    
+    if(!user){
+        return res.status(401).json({ error: "User not found." });
     }
+    if(!user.password){
+      return res.status(401).json({ error: "Password not set. Contact secretary." });
+    }
+
+    const isMatch=await bcrypt.compare(password,user.password);
+    if(!isMatch){
+       return res.status(401).json({ error: "Invalid password." });
+    }
+     req.session.userid = user._id;
+    req.session.role = user.role;
+    return res.redirect(user.role === "worker" ? "/worker-dashboard" : "/society");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 });
+
+// ----------------------------------------------
+// 🧑‍💼 Member set pass for 1st time
+// ----------------------------------------------
+router.get('/set-password',(req,res)=>{
+  res.render('set_password');
+});
+
+router.post('/set-password',async (req,res)=>{
+    const {phone,password,cpassword}=req.body;
+    if(!phone || !password || !cpassword){
+        return res.status(400).send("All fields are required.");
+    }
+    if(password!==cpassword){
+      return res.send("passwords do not match");
+    }
+    const user=await User.findOne({phone});
+    if(!user){
+      return res.status(404).send(`no account found with phone no:${phone}`);
+    }
+    if (user.passwordSet) {
+    return res.send("Password already set. Please log in.");
+  }
+  const hashed = await bcrypt.hash(password, 10);
+  user.password = hashed;
+  user.passwordSet = true;
+  await user.save();
+  return res.render('set_password', { success: true });
+})
+
+
+
+
+
+
 
 router.post("/api/rms/createticket", async (req, res) => {
   try {
