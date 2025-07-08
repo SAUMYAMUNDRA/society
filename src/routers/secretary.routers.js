@@ -419,8 +419,22 @@ router.post('/event/register/:eventId', isLoggedIn, async (req, res) => {
 });
 
 // ----------------------------------------------
+// 📝 Lost and Found - dashboar
+// ----------------------------------------------
+router.get('/lnf/dashboard', isLoggedIn, (req, res) => {
+  res.render('lnf_dashboard');
+});
+
+
+
+
+// ----------------------------------------------
 // 📝 Lost and Found - Show Form Page
 // ----------------------------------------------
+
+
+
+
 
 router.get('/lnf/post', isLoggedIn, (req, res) => {
   res.render('lnf_post'); // ✅ correct
@@ -484,6 +498,14 @@ router.post('/lnf/claim/:id',isLoggedIn,async (req,res)=>{
   }
 })
 
+
+
+// ----------------------------------------------
+// 🛠️ admin panel route on society home page
+// ----------------------------------------------
+router.get('/adminpanel',isSecretary,(req,res)=>{
+  res.render("adminpanel");
+})
 
 
 

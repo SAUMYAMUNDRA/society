@@ -26,8 +26,12 @@
         <% fines.forEach((fine, index) => { %>
           <tr class="text-center">
             <td class="px-4 py-2 border"><%= index + 1 %></td>
-            <td class="px-4 py-2 border"><%= fine.userId.name %></td>
-            <td class="px-4 py-2 border"><%= fine.userId.flatNo %></td>
+            <td class="px-4 py-2 border">
+              <%= fine.userId ? fine.userId.name : "❌ User Deleted" %>
+            </td>
+            <td class="px-4 py-2 border">
+              <%= fine.userId ? fine.userId.flatNo : "-" %>
+            </td>
             <td class="px-4 py-2 border"><%= fine.reason %></td>
             <td class="px-4 py-2 border">₹<%= fine.amount %></td>
             <td class="px-4 py-2 border">
@@ -35,7 +39,9 @@
                 <%= fine.status %>
               </span>
             </td>
-            <td class="px-4 py-2 border"><%= fine.issuedDate.toDateString() %></td>
+            <td class="px-4 py-2 border">
+              <%= fine.issuedDate ? fine.issuedDate.toDateString() : "-" %>
+            </td>
           </tr>
         <% }) %>
       </tbody>

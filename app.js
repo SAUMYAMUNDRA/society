@@ -91,7 +91,8 @@ app.get('/society', async (req, res) => {
       secretaryName: secretary?.name || "NA",
       secretaryPhone: secretary?.phone || "NA",
       pendingBillCount,
-      fines
+      fines,
+      role:user.role || "secretary"
     });
   } catch (err) {
     console.error("error loading society page", err);
@@ -216,16 +217,31 @@ app.post('/fms/fine/generate', isLoggedIn, isSecretary, async (req, res) => {
     res.status(500).send("❌ Failed to issue fine.");
   }
 });
+// in your router file, e.g. secretary.routers.js
 
+// 📋 View all fines (Secretary only)
 app.get('/fms/fine/all', isLoggedIn, isSecretary, async (req, res) => {
   try {
-    const fines = await Fine.find().populate('userId', 'name flatNo').sort({ issuedDate: -1 });
-    res.render('all_fines', { fines });
+    // 1️⃣ Fetch the secretary document using the correct session key
+    const secretary = await Secretary.findById(req.session.idr).select('name');
+
+    // 2️⃣ Fetch all fines
+    const fines = await Fine
+      .find()
+      .populate('userId', 'name flatNo')
+      .sort({ issuedDate: -1 });
+
+    // 3️⃣ Render, passing both the secretary and the list of fines
+    res.render('all_fines', {
+      secretary,
+      fines
+    });
   } catch (error) {
-    console.error("error showing all fines", error);
-    res.status(500).send("error showing all fines");
+    console.error("Error showing all fines", error);
+    res.status(500).send("Error showing all fines");
   }
 });
+
 
 app.get('/fms/fines', isLoggedIn, async (req, res) => {
   try {

@@ -30,7 +30,6 @@
 
   <div
     class="grid gap-4 w-full max-w-7xl min-h-screen p-4 rounded-2xl shadow-2xl bg-white grid-cols-1 md:grid-cols-4 lg:grid-cols-4">
-
     <!-- Header -->
     <div
       class="bg-gradient-to-r from-blue-700 to-blue-900 md:row-span-1 md:col-span-4 col-span-12 p-4 text-white font-extrabold shadow-lg rounded-xl flex items-center justify-between relative z-10">
@@ -89,7 +88,7 @@
       <div class="text-2xl md:text-3xl tracking-wide">EVENTS</div>
       <p class="mt-2 text-blue-100 text-sm">Upcoming activities & deadlines.</p>
     </div>
-
+   
     <!-- Management System Hover -->
     <div
       class="bg-gradient-to-r from-slate-600 to-slate-800 col-span-12 md:col-span-2 md:row-span-2 p-4 text-white font-extrabold shadow-lg rounded-xl flex flex-col items-center justify-center relative group overflow-hidden transition-transform duration-300 hover:-translate-y-1">
@@ -104,8 +103,10 @@
           class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">RMS</a>
         <a href="/fms"
          class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">FMS</a>
-        <a href="/lnf"
-          class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">LNFS</a>
+        <a href="/lnf/dashboard"
+   class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">
+   LNFS
+</a>
       </div>
     </div>
 
@@ -126,6 +127,19 @@
         </p>
       </div>
     </div>
+    <% if (role === "secretary") { %>
+  <div
+    class="bg-gradient-to-r from-yellow-500 to-yellow-600 col-span-12 md:col-span-4 p-4 text-white font-extrabold shadow-lg rounded-xl flex flex-col items-center justify-center hover:-translate-y-1 transition-transform duration-300">
+    <div class="text-3xl mb-2">🛠️</div>
+    <div class="text-xl tracking-wide">Admin Controls</div>
+    <p class="mt-1 text-yellow-100 text-sm mb-3">Manage society features & tools</p>
+    <a href="/adminpanel"
+      class="bg-white text-yellow-700 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-100 transition">
+      Go to Admin Panel
+    </a>
+  </div>
+<% } %>
+
   </div>
 </body>
 

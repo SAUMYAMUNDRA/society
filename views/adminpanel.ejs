@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+  <div class="max-w-7xl mx-auto p-6">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-extrabold text-blue-900">🔧 Admin Control Panel</h1>
+      <a href="/society" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition">⬅ Back to Dashboard</a>
+    </div>
+
+    <!-- Grid Controls -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- Add Member/Worker -->
+      <a href="/addmember" class="block bg-white rounded-xl shadow-md hover:shadow-xl p-6 transition group">
+        <div class="text-indigo-600 text-4xl mb-2">👥</div>
+        <h2 class="text-xl font-bold text-gray-800 mb-1 group-hover:underline">Add Member/Worker</h2>
+        <p class="text-sm text-gray-500">Create accounts and assign roles for society residents or staff.</p>
+      </a>
+
+      <!-- Manage Notices -->
+      <a href="/notice" class="block bg-white rounded-xl shadow-md hover:shadow-xl p-6 transition group">
+        <div class="text-yellow-500 text-4xl mb-2">📢</div>
+        <h2 class="text-xl font-bold text-gray-800 mb-1 group-hover:underline">Post Public Notice</h2>
+        <p class="text-sm text-gray-500">Inform society members about events, announcements, and more.</p>
+      </a>
+
+      <!-- FMS -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+  <div class="text-green-500 text-4xl mb-3">💰</div>
+  <h2 class="text-xl font-bold text-gray-800 mb-2">Financial Management System (FMS)</h2>
+  <p class="text-sm text-gray-500 mb-4">Handle billing, fines, and view member payment data.</p>
+  <div class="flex flex-col gap-2">
+
+    <!-- Generate Maintenance Bills -->
+    <a href="/fms/generate"
+       class="bg-green-100 text-green-800 font-medium px-4 py-2 rounded hover:bg-green-200 transition">
+      📝 Generate Maintenance Bills
+    </a>
+
+    <!-- View All Generated Bills -->
+    <a href="/fms/allbills"
+       class="bg-green-100 text-green-800 font-medium px-4 py-2 rounded hover:bg-green-200 transition">
+      📋 View All Generated Bills
+    </a>
+
+    <!-- Issue Fine -->
+    <a href="/fms/fine/generate"
+       class="bg-green-100 text-green-800 font-medium px-4 py-2 rounded hover:bg-green-200 transition">
+      ⚠️ Issue Fine
+    </a>
+
+    <!-- View All Fines -->
+    <a href="/fms/fine/all"
+       class="bg-green-100 text-green-800 font-medium px-4 py-2 rounded hover:bg-green-200 transition">
+      📄 View All Fines
+    </a>
+
+    <!-- (Optional) View My Bills as Secretary -->
+    <a href="/fms/mybills"
+       class="bg-green-100 text-green-800 font-medium px-4 py-2 rounded hover:bg-green-200 transition">
+      👤 View My Bills
+    </a>
+
+  </div>
+</div>
+
+      <!-- LNFS -->
+      <a href="/lnf/dashboard" class="block bg-white rounded-xl shadow-md hover:shadow-xl p-6 transition group">
+        <div class="text-purple-500 text-4xl mb-2">🔍</div>
+        <h2 class="text-xl font-bold text-gray-800 mb-1 group-hover:underline">Lost & Found</h2>
+        <p class="text-sm text-gray-500">View or manage lost and found submissions in the society.</p>
+      </a>
+
+      <!-- Analytics (Placeholder) -->
+      <div class="block bg-white rounded-xl shadow-md p-6 opacity-60 cursor-not-allowed">
+        <div class="text-blue-400 text-4xl mb-2">📊</div>
+        <h2 class="text-xl font-bold text-gray-800 mb-1">Analytics (Coming Soon)</h2>
+        <p class="text-sm text-gray-500">Dashboard insights and society usage reports.</p>
+      </div>
+
+      <!-- Settings (Optional placeholder) -->
+      <div class="block bg-white rounded-xl shadow-md p-6 opacity-60 cursor-not-allowed">
+        <div class="text-gray-500 text-4xl mb-2">⚙️</div>
+        <h2 class="text-xl font-bold text-gray-800 mb-1">Settings (Coming Soon)</h2>
+        <p class="text-sm text-gray-500">Control panel settings & permissions.</p>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
