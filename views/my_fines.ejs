@@ -5,42 +5,85 @@
   <title>My Fines</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans p-6">
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4">My Pending Fines</h1>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen font-sans p-6 flex items-center justify-center">
 
-    <% if (fines.length === 0) { %>
-      <p class="text-gray-600">You have no pending fines 🎉</p>
-    <% } else { %>
-      <table class="min-w-full table-auto text-left border border-gray-300">
-        <thead>
-          <tr class="bg-gray-200 text-gray-700">
-            <th class="px-4 py-2">Reason</th>
-            <th class="px-4 py-2">Amount</th>
-            <th class="px-4 py-2">Issued Date</th>
-            <th class="px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% fines.forEach(fine => { %>
-            <tr class="border-t">
-              <td class="px-4 py-2"><%= fine.reason %></td>
-              <td class="px-4 py-2">₹<%= fine.amount %></td>
-              <td class="px-4 py-2"><%= new Date(fine.issuedDate).toLocaleDateString() %></td>
-              <td class="px-4 py-2">
-                <form action="/fms/fines/pay/<%= fine._id %>" method="POST">
-                  <button class="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition">Pay</button>
-                </form>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    <% } %>
+  <div class="w-full max-w-6xl bg-white p-8 rounded-2xl shadow-2xl border border-blue-200">
+    <h1 class="text-4xl font-extrabold text-blue-800 text-center mb-10">🔔 My Fines</h1>
 
-    <div class="mt-6">
-      <a href="/society" class="text-blue-600 hover:underline">← Back to Society Page</a>
+    <!-- Pending Fines Section -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-red-600 mb-4">Pending Fines</h2>
+      <% if (pendingFines.length === 0) { %>
+        <p class="text-green-700 font-semibold">🎉 No pending fines!</p>
+      <% } else { %>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border border-blue-200 text-center rounded-lg overflow-hidden">
+            <thead class="bg-blue-100 text-blue-800 text-sm uppercase">
+              <tr>
+                <th class="px-4 py-3 border">Reason</th>
+                <th class="px-4 py-3 border">Amount</th>
+                <th class="px-4 py-3 border">Issued Date</th>
+                <th class="px-4 py-3 border">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% pendingFines.forEach(fine => { %>
+                <tr class="bg-white border-t hover:bg-blue-50">
+                  <td class="px-4 py-3 border"><%= fine.reason %></td>
+                  <td class="px-4 py-3 border font-semibold text-red-600">₹<%= fine.amount %></td>
+                  <td class="px-4 py-3 border"><%= new Date(fine.issuedDate).toLocaleDateString() %></td>
+                  <td class="px-4 py-3 border">
+                    <form action="/fms/fines/pay/<%= fine._id %>" method="POST">
+                      <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-full shadow-md transition">
+                        Pay
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Paid Fines Section -->
+    <div>
+      <h2 class="text-2xl font-bold text-green-700 mb-4">Paid Fines</h2>
+      <% if (paidFines.length === 0) { %>
+        <p class="text-gray-700 font-medium">No fines have been paid yet.</p>
+      <% } else { %>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border border-blue-200 text-center rounded-lg overflow-hidden">
+            <thead class="bg-blue-100 text-blue-800 text-sm uppercase">
+              <tr>
+                <th class="px-4 py-3 border">Reason</th>
+                <th class="px-4 py-3 border">Amount</th>
+                <th class="px-4 py-3 border">Issued Date</th>
+                <th class="px-4 py-3 border">Paid On</th>
+                <th class="px-4 py-3 border">Txn ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% paidFines.forEach(fine => { %>
+                <tr class="bg-white border-t hover:bg-blue-50">
+                  <td class="px-4 py-3 border"><%= fine.reason %></td>
+                  <td class="px-4 py-3 border text-green-700 font-semibold">₹<%= fine.amount %></td>
+                  <td class="px-4 py-3 border"><%= new Date(fine.issuedDate).toLocaleDateString() %></td>
+                  <td class="px-4 py-3 border"><%= new Date(fine.paymentDate).toLocaleDateString() %></td>
+                  <td class="px-4 py-3 border text-blue-700 font-semibold"><%= fine.transactionId %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="mt-10 text-center">
+      <a href="/society" class="text-blue-600 hover:underline text-sm">← Back to Society Dashboard</a>
     </div>
   </div>
+
 </body>
 </html>

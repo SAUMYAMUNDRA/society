@@ -190,8 +190,8 @@ router.post("/api/member/login", async (req, res) => {
 // ----------------------------------------------
 // 🧑‍💼 Member set pass for 1st time
 // ----------------------------------------------
-router.get('/set-password',(req,res)=>{
-  res.render('set_password');
+router.get('/set-password', (req, res) => {
+  res.render('set_password', { success: false });
 });
 
 router.post('/set-password',async (req,res)=>{

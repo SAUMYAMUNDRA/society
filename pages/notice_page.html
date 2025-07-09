@@ -5,28 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Post Notice</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body::-webkit-scrollbar {
+      width: 8px;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: #4a5568;
+      border-radius: 4px;
+    }
+    body::-webkit-scrollbar-thumb:hover {
+      background: #2d3748;
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gray-100 flex items-center justify-center">
+<body class="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center px-4 py-10 font-sans">
 
-  <form action="/api/notice" method="POST" class="bg-white p-8 rounded-2xl shadow-md w-full max-w-md space-y-6">
-    <h2 class="text-2xl font-bold text-center text-gray-700">Post a Notice</h2>
+  <form action="/api/notice" method="POST"
+        class="bg-white w-full max-w-xl p-8 rounded-3xl shadow-2xl border border-gray-200 space-y-6">
 
-    <div>
-      <label for="title" class="block mb-1 font-medium text-gray-600">Title</label>
-      <input type="text" name="title" id="title" required
-             class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <div class="text-center">
+      <h2 class="text-3xl font-extrabold text-blue-800">📢 Post a Notice</h2>
+      <p class="text-gray-500 text-sm mt-1">Let residents know what's important</p>
     </div>
 
+    <!-- Title -->
     <div>
-      <label for="content" class="block mb-1 font-medium text-gray-600">Content</label>
-      <textarea name="content" id="content" rows="6" required
-                class="w-full border border-gray-300 rounded-md p-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      <label for="title" class="block text-sm font-semibold text-gray-700 mb-1">Notice Title <span class="text-red-500">*</span></label>
+      <input type="text" name="title" id="title" placeholder="Meeting Reminder..." required
+             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
     </div>
 
-    <button type="submit"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">
-      Submit Notice
-    </button>
+    <!-- Content -->
+    <div>
+      <label for="content" class="block text-sm font-semibold text-gray-700 mb-1">Notice Content <span class="text-red-500">*</span></label>
+      <textarea name="content" id="content" rows="6" placeholder="Write your notice here..." required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="pt-2">
+      <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg shadow-md transition-all duration-300">
+        📬 Submit Notice
+      </button>
+    </div>
+
   </form>
 
 </body>

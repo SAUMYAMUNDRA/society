@@ -242,11 +242,16 @@ app.get('/fms/fine/all', isLoggedIn, isSecretary, async (req, res) => {
   }
 });
 
-
 app.get('/fms/fines', isLoggedIn, async (req, res) => {
   try {
-    const fines = await Fine.find({ userId: req.session.userid, status: "Pending" }).sort({ issuedDate: -1 });
-    res.render("my_fines", { fines });
+    const userId = req.session.userid;
+
+    // Separate queries for pending and paid fines
+    const pendingFines = await Fine.find({ userId, status: "Pending" }).sort({ issuedDate: -1 });
+    const paidFines = await Fine.find({ userId, status: "Paid" }).sort({ paymentDate: -1 });
+
+    // Send both arrays to the EJS template
+    res.render("my_fines", { pendingFines, paidFines });
   } catch (err) {
     console.error("Error loading user's fines:", err);
     res.status(500).send("Failed to load fines");
@@ -255,17 +260,28 @@ app.get('/fms/fines', isLoggedIn, async (req, res) => {
 
 app.post('/fms/fines/pay/:fineId', isLoggedIn, async (req, res) => {
   try {
-    await Fine.findByIdAndUpdate(req.params.fineId, {
-      status: "Paid",
-      paymentDate: new Date(),
-      transactionId: "TXN" + Date.now()
-    });
+    const fine = await Fine.findById(req.params.fineId);
+
+    if (!fine) {
+      return res.status(404).send("❌ Fine not found.");
+    }
+
+    if (fine.status === "Paid") {
+      return res.send("✅ This fine is already paid.");
+    }
+
+    fine.status = "Paid";
+    fine.paymentDate = new Date();
+    fine.transactionId = "TXN" + Date.now(); // Optional: track txn
+    await fine.save();
+
     res.redirect('/fms/fines');
   } catch (err) {
     console.error("Error paying fine:", err);
     res.status(500).send("❌ Failed to pay fine.");
   }
 });
+
 
 // --------------------------------------------
 // 🔹 Auth + Secretary Dashboard
