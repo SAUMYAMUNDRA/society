@@ -419,7 +419,7 @@ router.post('/event/register/:eventId', isLoggedIn, async (req, res) => {
 });
 
 // ----------------------------------------------
-// 📝 Lost and Found - dashboar
+// 📝 Lost and Found - dashboard
 // ----------------------------------------------
 router.get('/lnf/dashboard', isLoggedIn, (req, res) => {
   res.render('lnf_dashboard');
