@@ -14,7 +14,6 @@
     body::-webkit-scrollbar-track {
       background: #f1f1f1;
     }
-
     body::-webkit-scrollbar-thumb {
       background: #4a5568;
       border-radius: 4px;
@@ -37,11 +36,15 @@
         class="absolute left-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full overflow-hidden shadow-md border-2 border-blue-300">
         <img src="/images/SMS.png" alt="Society Logo" class="object-cover w-full h-full p-1">
       </div>
-      <div class="ml-24 text-2xl tracking-wide">SOCIETY NAME</div>
+       <div class="ml-24 text-2xl tracking-wide">
+    <%= societyName %>
+  </div>
       <div class="relative">
         <a href="/logout">
           <button
-            class="bg-blue-300 hover:bg-blue-400 text-blue-800 font-bold py-2 px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105">Logout</button>
+            class="bg-blue-300 hover:bg-blue-400 text-blue-800 font-bold py-2 px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105">
+            Logout
+          </button>
         </a>
       </div>
     </div>
@@ -54,10 +57,8 @@
         <h3 class="text-xl md:text-2xl font-extrabold mb-4 text-blue-800">Public Notices</h3>
         <div class="space-y-3 text-gray-700 text-base flex-grow overflow-y-auto custom-scrollbar pr-2">
           <% notices.forEach(notice=> { %>
-            <p><strong class="text-blue-600">TITLE: </strong>
-              <%= notice.title %>
-            </p>
-            <% }) %>
+            <p><strong class="text-blue-600">TITLE:</strong> <%= notice.title %></p>
+          <% }) %>
         </div>
       </div>
 
@@ -65,19 +66,31 @@
       <div class="w-full md:w-1/4 p-6 text-left flex flex-col justify-start">
         <h3 class="text-xl md:text-2xl font-extrabold mb-4 text-gray-700">Private Notices</h3>
         <ul class="list-disc list-inside text-gray-700 space-y-2 flex-grow overflow-y-auto custom-scrollbar pr-2">
-          <% if (fines && fines.length> 0) { %>
-            <% fines.forEach(fine=> { %>
-              <li>
-                <span class="text-red-600 font-semibold">Fine:</span>
-                <%= fine.reason %> - ₹<%= fine.amount %>
-                    <a href="/fms/fines" class="ml-2 text-blue-600 hover:underline text-sm">(Pay Fine)</a>
-              </li>
+          <% if ((fines && fines.length> 0) || (unpaidBills && unpaidBills.length > 0)) { %>
+            <% if (fines && fines.length> 0) { %>
+              <li class="text-sm font-semibold text-red-600 underline">Pending Fines</li>
+              <% fines.forEach(fine=> { %>
+                <li>
+                  <span class="text-red-600 font-semibold">Fine:</span>
+                  <%= fine.reason %> - ₹<%= fine.amount %>
+                  <a href="/fms/fines" class="ml-2 text-blue-600 hover:underline text-sm">(Pay Fine)</a>
+                </li>
               <% }) %>
-                <% } else { %>
-                  <li class="text-green-700">No pending fines 🎉</li>
-                  <% } %>
+            <% } %>
+            <% if (unpaidBills && unpaidBills.length> 0) { %>
+              <li class="text-sm font-semibold text-yellow-600 underline mt-2">Unpaid Bills</li>
+              <% unpaidBills.forEach(bill=> { %>
+                <li>
+                  <span class="text-yellow-600 font-semibold">Bill:</span>
+                  <%= bill.month %> - ₹<%= bill.amount %>
+                  <a href="/fms" class="ml-2 text-blue-600 hover:underline text-sm">(Pay Bill)</a>
+                </li>
+              <% }) %>
+            <% } %>
+          <% } else { %>
+            <li class="text-green-700">No pending fines or bills 🎉</li>
+          <% } %>
         </ul>
-
       </div>
     </div>
 
@@ -88,25 +101,29 @@
       <div class="text-2xl md:text-3xl tracking-wide">EVENTS</div>
       <p class="mt-2 text-blue-100 text-sm">Upcoming activities & deadlines.</p>
     </div>
-   
+
     <!-- Management System Hover -->
     <div
-      class="bg-gradient-to-r from-slate-600 to-slate-800 col-span-12 md:col-span-2 md:row-span-2 p-4 text-white font-extrabold shadow-lg rounded-xl flex flex-col items-center justify-center relative group overflow-hidden transition-transform duration-300 hover:-translate-y-1">
+      class="bg-gradient-to-r from-slate-600 to-slate-800 col-span-12 md:col-span-2 md:row-span-2 p-4 text-white font-extrabold shadow-lg rounded-xl relative group overflow-hidden transition-transform duration-300 hover:-translate-y-1">
       <div class="text-3xl mb-2">⚙️</div>
       <div class="text-xl tracking-wide">MANAGEMENT SYSTEM</div>
       <p class="mt-1 text-slate-100 text-sm">Efficient operations, streamlined processes.</p>
 
-      <!-- Hover options -->
+      <!-- Hover options: side-by-side -->
       <div
-        class="absolute inset-0 bg-slate-800 bg-opacity-90 flex flex-col items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        class="absolute inset-0 bg-slate-800 bg-opacity-90 flex flex-row items-center justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4">
         <a href="/rmshome"
-          class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">RMS</a>
+          class="bg-white text-slate-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-200 transition text-sm">
+          Resident Management System
+        </a>
         <a href="/fms"
-         class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">FMS</a>
+          class="bg-white text-slate-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-200 transition text-sm">
+          Financial Management System
+        </a>
         <a href="/lnf/dashboard"
-   class="bg-white text-slate-800 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-200 transition">
-   LNFS
-</a>
+          class="bg-white text-slate-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-200 transition text-sm">
+          Lost &amp; Found System
+        </a>
       </div>
     </div>
 
@@ -119,27 +136,23 @@
       <div
         class="absolute inset-0 bg-gray-800 bg-opacity-90 flex flex-col items-center justify-center gap-3 text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div class="text-white font-bold text-lg">Secretary</div>
-        <p><strong>Name:</strong>
-          <%= secretaryName %>
-        </p>
-        <p><strong>Phone:</strong>
-          <%= secretaryPhone %>
-        </p>
+        <p><strong>Name:</strong> <%= secretaryName %></p>
+        <p><strong>Phone:</strong> <%= secretaryPhone %></p>
       </div>
     </div>
-  <% if (role === "secretary") { %>
-  <div
-    class="bg-gradient-to-r from-blue-500 to-blue-700 col-span-12 md:col-span-4 p-4 text-white font-extrabold shadow-lg rounded-xl flex flex-col items-center justify-center hover:-translate-y-1 transition-transform duration-300">
-    <div class="text-3xl mb-2">🛠️</div>
-    <div class="text-xl tracking-wide">Admin Controls</div>
-    <p class="mt-1 text-blue-100 text-sm mb-3">Manage society features & tools</p>
-    <a href="/adminpanel"
-      class="bg-white text-blue-700 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-blue-100 transition">
-      Go to Admin Panel
-    </a>
-  </div>
-<% } %>
 
+    <% if (role === "secretary") { %>
+      <div
+        class="bg-gradient-to-r from-blue-500 to-blue-700 col-span-12 md:col-span-4 p-4 text-white font-extrabold shadow-lg rounded-xl flex flex-col items-center justify-center hover:-translate-y-1 transition-transform duration-300">
+        <div class="text-3xl mb-2">🛠️</div>
+        <div class="text-xl tracking-wide">Admin Controls</div>
+        <p class="mt-1 text-blue-100 text-sm mb-3">Manage society features & tools</p>
+        <a href="/adminpanel"
+          class="bg-white text-blue-700 font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-blue-100 transition">
+          Go to Admin Panel
+        </a>
+      </div>
+    <% } %>
 
   </div>
 </body>

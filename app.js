@@ -70,6 +70,10 @@ app.get('/society', async (req, res) => {
     if (!user) return res.redirect('/login');
 
     const secretaryId = user.secretaryId || user._id;
+    const secretary = await Secretary.findById(secretaryId);
+
+    // 🏷️ Get the society name from secretary
+const societyName = secretary?.societyName || "My Society";
 
     // 🔔 Public notices for everyone in the society
     const notices = await Notice.find({ secretaryId, userId: null });
@@ -77,28 +81,35 @@ app.get('/society', async (req, res) => {
     // 🔒 Private notices only for this user
     const privateNotices = await Notice.find({ userId }).sort({ createdAt: -1 });
 
-    const secretary = await Secretary.findById(secretaryId);
+    // ⏳ Pending fines
     const fines = await Fine.find({ userId, status: "Pending" }).sort({ issuedDate: -1 });
 
+    // 💸 Unpaid maintenance bills
+    const unpaidBills = await MaintenanceBills.find({ userId, status: 'Pending' }).sort({ createdAt: -1 });
+
+    // 🔢 Count of unpaid bills for badge or alerts
     let pendingBillCount = 0;
     if (user.role === "member") {
       pendingBillCount = await MaintenanceBills.countDocuments({ userId, status: { $ne: "Paid" } });
     }
 
     res.render('society', {
-      notices,              // public
-      privateNotices,       // personal like event registration success
+      notices,
+      societyName, // ✅ Now correctly set
+      privateNotices,
+      unpaidBills,
       secretaryName: secretary?.name || "NA",
       secretaryPhone: secretary?.phone || "NA",
       pendingBillCount,
       fines,
-      role:user.role || "secretary"
+      role: user.role || "secretary"
     });
   } catch (err) {
-    console.error("error loading society page", err);
-    res.status(500).send("internal server error");
+    console.error("Error loading society page:", err);
+    res.status(500).send("Internal server error");
   }
 });
+
 
 // --------------------------------------------
 // 🔹 Tickets (RMS)
