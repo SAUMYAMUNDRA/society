@@ -474,10 +474,14 @@ router.post('/lnf/post', isLoggedIn, async (req, res) => {
 
 router.get('/lnf',isLoggedIn,async (req,res)=>{
   try {
+const u = req.session.userid;
+const user = await User.findById(u); // wait for the user document
+const flatNo = user?.flatNo || "Unknown";
+console.log(flatNo);
     const items=await LostFoundItem.find().sort({date:-1}).populate('postedBy', 'flatNo');
-    res.render('lnf_list',{items});
+    res.render('lnf_list',{items,flatNo});
   } catch (error) {
-     console.error("Error fetching lost/found items:", err);
+     console.error("Error fetching lost/found items:", error);
     res.status(500).send("Error loading lost and found board.");
   }
 })
@@ -486,17 +490,28 @@ router.get('/lnf',isLoggedIn,async (req,res)=>{
 // ----------------------------------------------
 // 📋 Update status if claimed
 // ----------------------------------------------
-
-router.post('/lnf/claim/:id',isLoggedIn,async (req,res)=>{
+router.post('/lnf/claim/:id', isLoggedIn, async (req, res) => {
   try {
-    const itemId=req.params.id;
-    await LostFoundItem.findByIdAndUpdate(itemId,{status:'Claimed'});
+    const u = req.session.userid;
+    const user = await User.findById(u);
+    const flatNo = user?.flatNo || "Unknown";
+
+    await LostFoundItem.findByIdAndUpdate(req.params.id, {
+      status: 'Claimed',
+      claimedBy: {
+        userId: u,
+        flatNo: flatNo
+      },
+      claimedAt: new Date()
+    });
+
     res.redirect('/lnf');
-  } catch (error) {
-   console.error("Error claiming item:", error);
-    res.status(500).send("Failed to mark item as claimed"); 
+  } catch (err) {
+    console.error("Error claiming item:", err);
+    res.status(500).send("Failed to mark item as claimed");
   }
-})
+});
+
 
 
 

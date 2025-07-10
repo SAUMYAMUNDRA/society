@@ -1,19 +1,38 @@
-<!-- lnf_dashboard.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Lost & Found Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body::-webkit-scrollbar {
+      width: 8px;
+    }
+    body::-webkit-scrollbar-thumb {
+      background-color: #4b5563;
+      border-radius: 4px;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 flex justify-center items-center min-h-screen font-sans">
-  <div class="bg-white p-10 rounded-2xl shadow-lg max-w-md w-full space-y-6 text-center">
-    <h1 class="text-3xl font-bold text-gray-800">Lost & Found</h1>
-    <p class="text-gray-500 text-sm">Manage lost or found items in the society</p>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center min-h-screen font-sans">
 
-    <a href="/lnf" class="block bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow">🔍 View lost and found Items</a>
+  <div class="bg-white shadow-2xl rounded-2xl p-10 max-w-md w-full text-center border border-blue-200">
+    <h1 class="text-3xl font-extrabold text-blue-800 mb-2 tracking-tight">Lost & Found Portal</h1>
+    <p class="text-gray-600 mb-6 text-sm">Easily manage or post lost & found items in your society</p>
 
-    <a href="/lnf/post" class="block bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg shadow">➕ Post New found or lost Item</a>
+    <div class="space-y-4">
+      <a href="/lnf"
+         class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition">
+        🔍 View Lost & Found Items
+      </a>
+
+      <a href="/lnf/post"
+         class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition">
+        ➕ Post a Lost or Found Item
+      </a>
+    </div>
   </div>
+
 </body>
 </html>
