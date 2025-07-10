@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/css/output.css" rel="stylesheet">
-      <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <title>Document</title>
 </head>
@@ -28,8 +28,7 @@
                         <input type="text" id="societyInput"
                             placeholder="                               Enter Your Society Name to Get Started"
                             class="w-full p-4 pr-24  rounded-full shadow-md bg-white text-gray-700 focus:outline-none" />
-                        <button type="submit"
-  id="goBtn"
+                        <button type="submit" id="goBtn"
                             class="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-4 rounded-full hover:bg-blue-600 active:scale-95 transition">
                             Go
                         </button>
@@ -47,21 +46,21 @@
     </div>
 </body>
 <script>
-  const form = document.getElementById("societyForm");
-  const input = document.getElementById("societyInput");
+    const form = document.getElementById("societyForm");
+    const input = document.getElementById("societyInput");
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    const societyName = input.value.trim();
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const societyName = input.value.trim();
 
-    if (!societyName) {
-      alert("Please enter your society name.");
-      return;
-    }
+        if (!societyName) {
+            alert("Please enter your society name.");
+            return;
+        }
 
-    const encodedName = encodeURIComponent(societyName);
-    window.location.href = `/register?society=${encodedName}`;
-  });
+        const encodedName = encodeURIComponent(societyName);
+        window.location.href = `/register?society=${encodedName}`;
+    });
 </script>
 
 

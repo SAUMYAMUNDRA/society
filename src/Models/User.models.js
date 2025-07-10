@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { stringify } from "querystring";
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -21,7 +22,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     enum: ["member", "worker"],
     default: "member"
-  }
+  },
+securityQuestion: {
+  type:String
+},
+securityAnswer: {
+  type:String
+},
 });
 
 export const User = mongoose.model("User", UserSchema);

@@ -1,5 +1,7 @@
 
 import express from "express";
+import nodemailer from 'nodemailer'
+import crypto from 'crypto'
 import { Secretary } from "../Models/Seceratary.models.js";
 import { isLoggedIn } from "../middlewares/isLLoggedIn.js";
 import bcrypt from 'bcrypt';
@@ -9,61 +11,81 @@ import isSecretary from "../middlewares/isSecretary.auth.js";
 import { Createticket } from '../Models/Createticket.models.js';
 import { LostFoundItem } from "../Models/LostFoundItem.models.js";
 import isWorker from "../middlewares/isWorker.js";
-import { MaintenanceBills } from "../Models/Maintenancebills.models.js";
+// import { MaintenanceBills } from "../Models/Maintenancebills.models.js";
 import { Event } from "../Models/Event.models.js";
 import { EventRegistration } from "../Models/EventRegistration.models.js";
-import { name } from "ejs";
-
 const router = express.Router();
 
 // ----------------------------------------------
 // 🔐 Secretary Registration & Login Routes
 // ----------------------------------------------
+// Register
 
 router.post("/api/secretary", async (req, res) => {
-  try {
-    const {
-      name, email, phone, dob,
-      societyName, societyAddress,
-      password, cpass, fullAddress
-    } = req.body;
+  const {
+    name, email, phone, dob,
+    societyName, societyAddress,
+    password, cpass, fullAddress,
+    securityQuestion, securityAnswer
+  } = req.body;
 
-    if (!name || !email || !phone || !dob || !societyName || !societyAddress || !password || !cpass || !fullAddress) {
-      return res.status(400).json({ error: "All fields are required." });
-    }
+  // Normalize email
+  const emailNorm = email.trim().toLowerCase();
 
-    const user = await Secretary.findOne({ email });
-    if (user) return res.status(500).json({ error: "User already exists." });
+  // … your existing validation & cpass check …
 
-    await new Secretary({
-      name, email, phone, dob, societyName,
-      societyAddress, password, cpass, fullAddress
-    }).save();
-
-    res.status(201).json({ message: "Secretary registered successfully" });
-  } catch (error) {
-    console.error("Error saving secretary:", error);
-    res.status(500).json({ error: "Server error" });
-  }
+  const hashed = await bcrypt.hash(password, 12);
+  const sec = new Secretary({
+    name,
+    email: emailNorm,             // ← store lowercase
+    phone,
+    dob,
+    societyName,
+    societyAddress,
+    password: hashed,
+    fullAddress,
+    securityQuestion,
+    securityAnswer: securityAnswer.trim().toLowerCase()
+  });
+  await sec.save();
+  res.status(201).json({ message: "Secretary registered successfully" });
 });
 
+
+// UPDATED LOGIN ROUTE
 router.post("/api/secretary/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ error: "Email and password are required" });
+    let { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    // Normalize lookup
+    email = email.trim().toLowerCase();
 
     const user = await Secretary.findOne({ email });
-    if (!user || user.password !== password) return res.status(401).json({ error: "Invalid email or password" });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
-    req.session.idr = user._id;
+    // Compare the plaintext password to the stored hash
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Successful login
+    req.session.idr  = user._id;
     req.session.role = "secretary";
-    req.session.pass = password;
+
     res.status(200).json({ message: "Login successful", email });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
+
 
 router.get("/dashboard", isLoggedIn, (req, res) => {
   res.render("dashboard", { user: req.user });
@@ -521,6 +543,56 @@ router.post('/lnf/claim/:id', isLoggedIn, async (req, res) => {
 router.get('/adminpanel',isSecretary,(req,res)=>{
   res.render("adminpanel");
 })
+
+
+
+
+// ----------------------------------------------
+// 🛠️ Secretary forgot password
+// ----------------------------------------------
+
+router.get('/forgot-password',(req,res)=>{
+  res.render('forgot_password');
+})
+
+router.post('/forgot-password',async (req,res)=>{
+  const {email}=req.body;
+  const user=await Secretary.findOne({email});
+   console.log(email);
+  
+  if(!user){
+    return res.send(`no user found with the mail ${email}`);
+  }
+   res.render('secretary_security_question', {
+    email: user.email,
+    question: user.securityQuestion,
+  });
+
+})
+
+
+router.post("/reset-password-secretary", async (req, res) => {
+  const { email, answer, newPassword } = req.body;
+
+  const secretary = await Secretary.findOne({ email });
+ 
+  if (!secretary) {
+    return res.status(404).send("User not found.");
+  }
+
+  const isCorrect =
+    secretary.securityAnswer.trim().toLowerCase() === answer.trim().toLowerCase();
+
+  if (!isCorrect) {
+    return res.status(400).send("Incorrect answer to the security question.");
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 12);
+  secretary.password = hashed;
+  await secretary.save();
+
+  res.send("Password reset successfully. You can now log in.");
+});
 
 
 
