@@ -313,26 +313,31 @@ router.post('/event/create',isSecretary,async (req,res)=>{
 // ----------------------------------------------
 // 🛠️ Event Routes to show all tickets
 // ----------------------------------------------
-
-router.get('/list',isLoggedIn, async (req,res)=>{
+router.get('/list', isLoggedIn, async (req, res) => {
   try {
-      const events=await Event.find().sort({date:1});
-      const userId=req.session.userid;
-      const secretaryId=req.session.idr;
-      console.log(secretaryId);
-      res.render('event_list',{
-        events,
-        userId,
-         //check
-        secretaryId,//check
-      }) 
-        
+    const events = await Event.find().sort({ date: 1 });
+    const userId = req.session.userid;
+    const secretaryId = req.session.idr;
+
+    let registeredEventIds = [];
+
+    if (userId) {
+      const registrations = await EventRegistration.find({ userId });
+      registeredEventIds = registrations.map(reg => reg.eventId.toString());
+    }
+
+    res.render('event_list', {
+      events,
+      userId,
+      secretaryId,
+      registeredEventIds
+    });
+
   } catch (error) {
     console.error('Error fetching events:', error);
     res.status(500).send('Error fetching events');
   }
-})
-
+});
 
 
 
@@ -416,7 +421,15 @@ router.post('/event/register/:eventId', isLoggedIn, async (req, res) => {
     }
 
     // Register the user
-    const newReg = new EventRegistration({ eventId, user: userId });
+  const userDoc = await User.findById(userId);
+
+const newReg = new EventRegistration({
+  eventId,
+  userId,
+  name: userDoc.name,
+  flatNo: userDoc.flatNo,
+  phone: userDoc.phone
+});
     await newReg.save();
 
     // Get secretaryId from User model
@@ -440,6 +453,44 @@ router.post('/event/register/:eventId', isLoggedIn, async (req, res) => {
     res.status(500).send("Server error during event registration.");
   }
 });
+
+
+
+
+
+
+// ----------------------------------------------
+// 📝 route: Deregister from an event
+// ----------------------------------------------
+
+// ✅ Route: Deregister from an event
+router.post('/event/deregister/:eventId', isLoggedIn, async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const userId = req.session.userid;
+
+    // Check if the user is actually registered
+    const registration = await EventRegistration.findOne({ eventId, userId });
+    if (!registration) {
+      return res.status(400).send("⚠️ You are not registered for this event.");
+    }
+
+    // Delete the registration
+    await EventRegistration.deleteOne({ _id: registration._id });
+
+    // Optional: add a private notice or log if needed
+
+    // Redirect to the list with optional query param
+    res.redirect('/list?deregistered=1');
+  } catch (error) {
+    console.error("❌ Deregistration error:", error);
+    res.status(500).send("Server error during deregistration.");
+  }
+});
+
+
+
+
 
 // ----------------------------------------------
 // 📝 Lost and Found - dashboard
