@@ -14,6 +14,7 @@ import isWorker from "../middlewares/isWorker.js";
 // import { MaintenanceBills } from "../Models/Maintenancebills.models.js";
 import { Event } from "../Models/Event.models.js";
 import { EventRegistration } from "../Models/EventRegistration.models.js";
+import e from "express";
 const router = express.Router();
 
 // ----------------------------------------------
@@ -593,6 +594,45 @@ router.post("/reset-password-secretary", async (req, res) => {
 
   res.send("Password reset successfully. You can now log in.");
 });
+
+
+
+
+// ----------------------------------------------
+// 🛠️ Member changes pass after logging in 1st time at 1st time pass is set by sec and then after logging in user will change
+// ----------------------------------------------
+
+router.get('/change_member_password',isLoggedIn,(req,res)=>{
+  res.render('change_member_password');
+})
+
+router.post('/member_passowrd_change', async (req, res) => {
+  try {
+    const email = req.body.email.trim();
+    const current_password = req.body.current_password.trim();
+    const new_password = req.body.new_password.trim();
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.send("No user found with this email.");
+    }
+
+    const isMatch = await bcrypt.compare(current_password, user.password);
+    if (!isMatch) {
+      return res.send("Incorrect current password.");
+    }
+
+    const hashedNewPassword = await bcrypt.hash(new_password, 10);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.send("Password changed successfully.");
+  } catch (error) {
+    res.status(500).send("Error changing password: " + error.message);
+  }
+});
+
+
 
 
 
