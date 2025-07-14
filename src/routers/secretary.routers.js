@@ -278,6 +278,21 @@ router.post("/api/rms/createticket", async (req, res) => {
 // ----------------------------------------------
 // 🛠️ Event Routes
 // ----------------------------------------------
+
+
+
+
+
+// ----------------------------------------------
+// 🛠️ Event dashboard
+// ----------------------------------------------
+router.get('/event-dashboard',isLoggedIn,(req,res)=>{
+  res.render('event_dashboard');
+})
+
+
+
+
 router.get('/event/create',isSecretary,(req,res)=>{
   res.render('event_create')
 });

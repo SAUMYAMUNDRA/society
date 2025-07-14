@@ -74,7 +74,7 @@ app.get('/society', async (req, res) => {
 
     // 🏷️ Get the society name from secretary
 const societyName = secretary?.societyName || "My Society";
-
+const userName=user.name;
     // 🔔 Public notices for everyone in the society
     const notices = await Notice.find({ secretaryId, userId: null });
 
@@ -96,6 +96,7 @@ const societyName = secretary?.societyName || "My Society";
     res.render('society', {
       notices,
       societyName, // ✅ Now correctly set
+      userName,
       privateNotices,
       unpaidBills,
       secretaryName: secretary?.name || "NA",
@@ -108,6 +109,10 @@ const societyName = secretary?.societyName || "My Society";
     console.error("Error loading society page:", err);
     res.status(500).send("Internal server error");
   }
+});
+
+app.get('/event-dashboard', isLoggedIn, (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages', 'event_dashboard.html')); 
 });
 
 
