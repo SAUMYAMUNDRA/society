@@ -76,7 +76,7 @@ app.get('/society', async (req, res) => {
 const societyName = secretary?.societyName || "My Society";
 const userName=user.name;
     // 🔔 Public notices for everyone in the society
-    const notices = await Notice.find({ secretaryId, userId: null });
+    const notices = await Notice.find({ secretaryId, userId: null }).sort({createdAt:-1});
 
     // 🔒 Private notices only for this user
     const privateNotices = await Notice.find({ userId }).sort({ createdAt: -1 });

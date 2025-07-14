@@ -145,7 +145,7 @@ router.post("/api/notice", isSecretary, async (req, res) => {
     if (!title || !content) return res.status(400).json({ error: "All fields are required." });
 
     const secId = req.session.idr;
-    await new Notice({ title, content, secretaryId: secId }).save();
+    await new Notice({ title, content, secretaryId: secId }).save().sort;
 
     res.redirect('/notice');
   } catch (error) {
