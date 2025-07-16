@@ -94,7 +94,18 @@ society-management-system/
 └── README.md
 ##PROJECT IMAGES
 
-![Dashboard Screenshot](public/society_screenshots/Screenshot from 2025-07-16 10-14-07.png)
+                                                Landing Page
+![LANDING PAGE](public/society_screenshots/landing_page.png)
+                                                  SOCIETY HOME
+![SOCIETY_HOME](public/society_screenshots/society_home.png)
+                                              
+                                                  ADMIN CONTROL
+![ADMIN CONTROL](public/society_screenshots/admin_control.png)
+                                          FINANCIAL MANAGEMENT SYSTEM
+![FMS](public/society_screenshots/fms.png)
+                                        RELATIONSHIP MANAGEMENT SYSTEM
+![RMS](public/society_screenshots/rms.png)
+  
 
 ## 🔧 Installation
 
