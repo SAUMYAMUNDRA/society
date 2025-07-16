@@ -93,8 +93,10 @@ society-management-system/
 ├── package-lock.json
 └── README.md
 ##PROJECT IMAGES
-
-![Dashboard Screenshot](public/society_screenshots/society_home.png)
+                                                  SOCIETY HOME
+![SOCIETY_HOME](public/society_screenshots/society_home.png)
+                                                  LANDING PAGE
+![LANDING PAGE](public/society_screenshots/landing_page.png)
 
 ## 🔧 Installation
 
