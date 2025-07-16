@@ -92,6 +92,10 @@ society-management-system/
 ├── package.json
 ├── package-lock.json
 └── README.md
+##PROJECT IMAGES
+
+![Dashboard Screenshot](public/society_screenshots/Screenshot from 2025-07-16 10-14-07.png)
+
 ## 🔧 Installation
 
 1. **Clone the repository**
