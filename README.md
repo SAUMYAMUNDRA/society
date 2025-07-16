@@ -94,7 +94,7 @@ society-management-system/
 └── README.md
 ##PROJECT IMAGES
 
-![Dashboard Screenshot](public/society_screenshots/Screenshot from 2025-07-16 10-14-07.png)
+![Dashboard Screenshot](public/society_screenshots/society_home.png)
 
 ## 🔧 Installation
 
