@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Post Notice</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
   <style>
     body::-webkit-scrollbar {
       width: 8px;
@@ -51,6 +54,27 @@
     </div>
 
   </form>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const success = urlParams.get('success');
 
+  if (success === 'true') {
+    Toastify({
+      text: "✅ Notice published successfully!",
+      duration: 3000,
+      gravity: "top",
+      position: "center",
+      backgroundColor: "#22c55e", // green
+      stopOnFocus: true,
+    }).showToast();
+
+    // Remove query param so it doesn't show again on refresh
+    const url = new URL(window.location);
+    url.searchParams.delete("success");
+    window.history.replaceState({}, document.title, url);
+  }
+});
+</script>
 </body>
 </html>

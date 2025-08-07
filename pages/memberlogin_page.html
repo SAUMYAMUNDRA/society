@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>member login</title>
   <script src="https://cdn.tailwindcss.com"></script>
+ <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
@@ -40,7 +42,28 @@
     </div>
   </div>
 
-  
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const success = urlParams.get('success');
+
+  if (success === 'false') {
+    Toastify({
+      text: "Invalid email or password ",
+      duration: 3000,
+      gravity: "top",
+      position: "center",
+      backgroundColor: "#ef4444", // red
+      stopOnFocus: true,
+    }).showToast();
+
+    // Remove query param so it doesn't show again on refresh
+    const url = new URL(window.location);
+    url.searchParams.delete("success");
+    window.history.replaceState({}, document.title, url);
+  }
+});
+</script>
  
 </body>
 </html>

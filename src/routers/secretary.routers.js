@@ -108,7 +108,7 @@ router.post("/api/addmember", isSecretary, async (req, res) => {
       flatNo,
       role
      } = req.body;
- if (!name || !email || !phone || !flatNo ) {
+ if (!name || !email || !phone  ) {
       return res.status(400).json({ error: "Missing required fields." });
     }
 
@@ -116,19 +116,20 @@ router.post("/api/addmember", isSecretary, async (req, res) => {
     if (existing) {
       return res.status(409).json({ error: "User already exists with same phone." });
     }
-     const newUser = new User({
-      name,
-      age,
-      email,
-      phone,
-      dob,
-      address,
-      flatNo,
-      secretaryId: req.session.idr,
-      role: role || "member"
-    });
+    
+const newUser = new User({
+  name,
+  age,
+  email,
+  phone,
+  dob,
+  address,
+  flatNo: flatNo || "worker",  
+  secretaryId: req.session.idr,
+  role: role || "member"
+});
     await newUser.save();
-    res.redirect('/addmember');
+    res.redirect("/addmember?success=true")
   } catch (error) {
     console.error("Error adding member:", error);
     res.status(500).json({ error: "Server error" });
@@ -147,7 +148,7 @@ router.post("/api/notice", isSecretary, async (req, res) => {
     const secId = req.session.idr;
     await new Notice({ title, content, secretaryId: secId }).save().sort;
 
-    res.redirect('/notice');
+    res.redirect('/notice?success=true');
   } catch (error) {
     console.error("Error publishing notice:", error);
     res.status(500).json({ error: "Server error" });
@@ -191,15 +192,15 @@ router.post("/api/member/login", async (req, res) => {
     const user = await User.findOne({ phone: PhoneNo });
     
     if(!user){
-        return res.status(401).json({ error: "User not found." });
+        return res.redirect('/login?success=false');
     }
     if(!user.password){
-      return res.status(401).json({ error: "Password not set. Contact secretary." });
+       return res.redirect('/login?success=false');
     }
 
     const isMatch=await bcrypt.compare(password,user.password);
     if(!isMatch){
-       return res.status(401).json({ error: "Invalid password." });
+       return res.redirect('/login?success=false');
     }
      req.session.userid = user._id;
     req.session.role = user.role;

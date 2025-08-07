@@ -146,7 +146,7 @@ app.post("/fms/generate-bills", isLoggedIn, isSecretary, async (req, res) => {
       MaintenanceBills.create({ userId: user._id, month, amount, dueDate })
     ));
 
-    res.send("✅ Bills generated successfully for all members.");
+    res.redirect('/fms/generate?success=true');
   } catch (err) {
     console.log("error generating bills for all users");
     res.status(500).send("❌ Failed to generate bills.");
@@ -330,3 +330,8 @@ app.use(secretaryRouter);
 // --------------------------------------------
 connectDB();
 app.listen(PORT, () => console.log(`✅ Server is running on http://localhost:${PORT}`));
+
+
+
+
+

@@ -126,8 +126,10 @@
       <div class="text-xl tracking-wide">MANAGEMENT SYSTEM</div>
       <p class="mt-1 text-slate-100 text-sm">Efficient operations, streamlined processes.</p>
       <div class="absolute inset-0 bg-slate-800 bg-opacity-90 flex flex-row items-center justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4">
-        <a href="/rmshome" class="bg-white text-slate-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-200 transition text-sm">Resident Management System</a>
-        <a href="/fms" class="bg-white text-slate-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-200 transition text-sm">Financial Management System</a>
+<a href="<%= role === 'secretary' ? '/worker-dashboard' : '/rmshome' %>" 
+   class="bg-white text-slate-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-200 transition text-sm">
+   Resident Management System
+</a>        <a href="/fms" class="bg-white text-slate-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-200 transition text-sm">Financial Management System</a>
         <a href="/lnf/dashboard" class="bg-white text-slate-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-200 transition text-sm">Lost &amp; Found System</a>
       </div>
     </div>

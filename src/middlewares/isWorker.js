@@ -1,22 +1,35 @@
 import { User } from "../Models/User.models.js";
+import { Secretary } from "../Models/Seceratary.models.js";
 
-export default async function isWorker(req, res, next) {
+export default async function isWorkerOrSecretary(req, res, next) {
   try {
-    // Check both session.userid and session.role
-    if (!req.session.userid || req.session.role !== "worker") {
-      return res.redirect("/login");
+    const isWorker = req.session.userid && req.session.role === "worker";
+    const isSecretary = req.session.idr && req.session.role === "secretary";
+
+    if (isWorker) {
+      const user = await User.findById(req.session.userid);
+      if (!user || user.role !== "worker") {
+        return res.status(403).send("Unauthorized: Worker access denied");
+      }
+      req.user = user;
+      req.userType = "worker"; // optional flag if needed later
+      return next();
     }
 
-    const user = await User.findById(req.session.userid);
-
-    if (!user || user.role !== "worker") {
-      return res.status(403).send("Unauthorized: Only workers allowed");
+    if (isSecretary) {
+      const secretary = await Secretary.findById(req.session.idr);
+      if (!secretary) {
+        return res.status(403).send("Unauthorized: Secretary access denied");
+      }
+      req.user = secretary;
+      req.userType = "secretary"; // optional flag if needed later
+      return next();
     }
 
-    req.user = user; // Attach user to request
-    next();
+    // If neither worker nor secretary
+    return res.redirect("/login");
   } catch (err) {
-    console.error("isWorker error:", err);
+    console.error("isWorkerOrSecretary error:", err);
     res.status(500).send("Internal Server Error");
   }
 }
